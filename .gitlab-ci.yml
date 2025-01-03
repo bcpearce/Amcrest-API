@@ -1,0 +1,42 @@
+stages:
+  - test
+
+variables:
+  PYTHON_VERSION: 3.13
+
+default:
+  image: python:$PYTHON_VERSION
+  cache:
+    paths:
+      - .cache/pip
+      - .cache/pypoetry
+      - .cache/pre-commit
+  before_script:
+    - python --version ; pip --version
+    - pip install --upgrade pip
+    - pip install poetry --upgrade
+    - poetry install
+    - source `poetry env info --path`/bin/activate
+
+pytest:
+  stage: test
+  variables:
+    TEST_RESULTS_FILE: "test_results.xml"
+    TEST_COVERAGE_FILE: "coverage.xml"
+  script:
+    - pytest --junitxml $TEST_RESULTS_FILE
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  artifacts:
+    when: always
+    paths:
+      - $TEST_RESULTS_FILE
+      - $TEST_COVERAGE_FILE
+      - tests/**/*.ambr
+    reports:
+      junit: $TEST_RESULTS_FILE
+      coverage_report:
+        coverage_format: cobertura
+        path: $TEST_COVERAGE_FILE
+
+
+  

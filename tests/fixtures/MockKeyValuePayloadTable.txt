@@ -1,0 +1,6 @@
+table.General.LocalNo=8
+table.General.LockLoginEnable=true
+table.General.LockLoginTimes=30
+table.General.LoginFailLockTime=300
+table.General.MachineName=AMC05820_4FEB51
+table.General.MaxOnlineTime=3600

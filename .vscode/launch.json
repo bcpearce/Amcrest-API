@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "envFile": "${workspaceFolder}/.env",
+      "module": "amcrest_api",
+      "name": "Python Debugger: Module",
+      "request": "launch",
+      "type": "debugpy"
+    }
+  ],
+  "version": "0.2.0"
+}

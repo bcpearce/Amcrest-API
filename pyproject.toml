@@ -1,0 +1,42 @@
+[tool.poetry]
+authors = ["Benjamin Pearce <amcrest_api@bcpearce.com>"]
+description = "Python Wrapper for Amcrest API v3.26 or greater."
+license = "MIT"
+name = "amcrest-api"
+readme = "README.md"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+httpx = "^0.28.1"
+python = "^3.11"
+typer = "^0.15.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+syrupy = "^4.8.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.14.1"
+pre-commit = "^4.0.1"
+ruff = "^0.8.4"
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "UP",
+  "B",
+  "SIM",
+  "I",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "double"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
