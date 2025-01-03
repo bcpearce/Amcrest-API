@@ -1,5 +1,6 @@
 """Utilities."""
 
+import contextlib
 import json
 import re
 from typing import Any
@@ -8,10 +9,8 @@ import httpx
 
 
 def parse_response(response: httpx.Response) -> Any:
-    try:
+    with contextlib.suppress(json.decoder.JSONDecodeError):
         return response.json()
-    except json.decoder.JSONDecodeError:
-        pass
     return parse_key_value_response(response)
 
 

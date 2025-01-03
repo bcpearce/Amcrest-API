@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 
 from . import utils
-from .const import EventMessageTypes
+from .const import ApiEndpoints, EventMessageTypes
 
 
 class Camera:
@@ -60,21 +60,28 @@ class Camera:
     @cached_property
     def serial_number(self):
         return self._api_request(
-            "/cgi-bin/magicBox.cgi", params={"action": "getSerialNo"}
+            ApiEndpoints.MagicBox, params={"action": "getSerialNo"}
         )["sn"]
 
     @property
     def general_config(self):
         return self._api_request(
-            "/cgi-bin/configManager.cgi",
+            ApiEndpoints.ConfigManager,
             params={"action": "getConfig", "name": "General"},
         )
 
     @property
     def snap_config(self):
         return self._api_request(
-            "/cgi-bin/configManager.cgi",
+            ApiEndpoints.ConfigManager,
             params={"action": "getConfig", "name": "Snap"},
+        )
+
+    @property
+    def lighting_config(self):
+        return self._api_request(
+            ApiEndpoints.ConfigManager,
+            params={"action": "getConfig", "name": "Lighting"},
         )
 
     @property
@@ -84,7 +91,7 @@ class Camera:
     @cached_property
     def supported_events(self):
         return self._api_request(
-            "/cgi-bin/eventManager.cgi", params={"action": "getExposureEvents"}
+            ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
         )
 
     async def async_listen_events(
@@ -103,7 +110,7 @@ class Camera:
         filter_events_param = f"[{",".join(filter_events)}]"
         async with self._create_async_client() as client, client.stream(
             "GET",
-            "/cgi-bin/eventManager.cgi",
+            ApiEndpoints.EventManager,
             params={"action": "attach", "codes": filter_events_param, "heartbeat": 2},
         ) as stream:
             i = 1
@@ -119,25 +126,32 @@ class Camera:
             return self.serial_number
         return (
             await self._async_api_request(
-                "/cgi-bin/magicBox.cgi", params={"action": "getSerialNo"}
+                ApiEndpoints.MagicBox, params={"action": "getSerialNo"}
             )
         )["sn"]
 
     @property
     async def async_snap_config(self):
         return await self._async_api_request(
-            "/cgi-bin/configManager.cgi",
+            ApiEndpoints.ConfigManager,
             params={"action": "getConfig", "name": "Snap"},
+        )
+
+    @property
+    async def async_lighting_config(self):
+        return self._async_api_request(
+            ApiEndpoints.ConfigManager,
+            params={"action": "getConfig", "name": "Lighting"},
         )
 
     @property
     async def async_encode_capability(self):
         return await self._async_api_request(
-            "/cgi-bin/encode.cgi", params={"action": "getCaps"}
+            ApiEndpoints.Encode, params={"action": "getCaps"}
         )
 
     @cached_property
     async def async_supported_events(self):
         return self._api_request(
-            "/cgi-bin/eventManager.cgi", params={"action": "getExposureEvents"}
+            ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
         )

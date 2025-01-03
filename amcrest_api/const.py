@@ -24,3 +24,12 @@ class EventMessageTypes(StrEnum):
     TakenAwayDetection = "TakenAwayDetection"
     SafetyAbnormal = "SafetyAbnormal"
     LoginFailure = "LoginFailure"
+
+
+class ApiEndpoints(StrEnum):
+    """API Endpoints."""
+
+    ConfigManager = "/cgi-bin/configManager.cgi"
+    Encode = "/cgi-bin/encode.cgi"
+    EventManager = "/cgi-bin/eventManager.cgi"
+    MagicBox = "/cgi-bin/magicBox.cgi"

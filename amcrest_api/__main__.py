@@ -1,7 +1,9 @@
-import asyncio
 import contextlib
+import inspect
 from enum import Enum
+from functools import cached_property
 from pprint import pprint
+from typing import Type
 
 import httpx
 import typer
@@ -26,6 +28,12 @@ app = typer.Typer(
     add_completion=False,
 )
 console = Console()
+
+POSSIBLE_ACTIONS = [
+    attr
+    for attr, value in vars(Camera).items()
+    if isinstance(value, (cached_property, property))
+]
 
 
 def version_callback(print_version: bool) -> None:
@@ -69,26 +77,20 @@ def main(
         case_sensitive=False,
         help="Host name or IP Address for Amcrest Camera",
     ),
+    action: str = typer.Option(
+        ...,
+        "-a",
+        "--action",
+        autocompletion=lambda: POSSIBLE_ACTIONS,
+        case_sensitive=True,
+        help="Action to run",
+        prompt="Enter an action to run",
+    ),
 ) -> None:
     """Print a greeting with a giving name."""
     cam = Camera(host=host, username=username, password=password)
     try:
-        pprint("Testing Sync Methods")
-        pprint(cam.general_config)
-        pprint(cam.serial_number)
-        pprint(cam.snap_config)
-        pprint(cam.encode_capability)
-        pprint(cam.supported_events)
-        print("Testing Async Methods")
-
-        async def async_props():
-            pprint(await cam.async_serial_number)
-            pprint(await cam.async_snap_config)
-            pprint(await cam.async_encode_capability)
-            pprint(await cam.async_listen_events())
-
-        asyncio.run(async_props())
-
+        pprint(getattr(cam, action))
     except httpx.HTTPStatusError as e:
         print(
             f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
