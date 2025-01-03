@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from enum import Enum
 from pprint import pprint
 
@@ -84,8 +85,10 @@ def main(
             pprint(await cam.async_serial_number)
             pprint(await cam.async_snap_config)
             pprint(await cam.async_encode_capability)
+            pprint(await cam.async_listen_events())
 
         asyncio.run(async_props())
+
     except httpx.HTTPStatusError as e:
         print(
             f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
@@ -93,4 +96,5 @@ def main(
 
 
 if __name__ == "__main__":
-    app()
+    with contextlib.suppress(KeyboardInterrupt):
+        app()

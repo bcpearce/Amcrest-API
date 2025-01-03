@@ -1,9 +1,11 @@
+from collections.abc import Iterable
 from functools import cached_property
 from typing import Any
 
 import httpx
 
 from . import utils
+from .const import EventMessageTypes
 
 
 class Camera:
@@ -19,14 +21,17 @@ class Camera:
         self._schema = schema
         self._host = host
 
-    def _api_request(
-        self, endpoint, method="GET", params: dict[str, Any] | None = None
-    ):
-        with httpx.Client(
+    def _create_client(self):
+        return httpx.Client(
             auth=self._auth,
             base_url=f"{self._schema}://{self._host}",
             headers={"Content-Type": "application/json"},
-        ) as client:
+        )
+
+    def _api_request(
+        self, endpoint, method="GET", params: dict[str, Any] | None = None
+    ):
+        with self._create_client() as client:
             request: httpx.Request = client.build_request(
                 method=method, url=endpoint, params=params
             )
@@ -34,14 +39,17 @@ class Camera:
         response.raise_for_status()
         return utils.parse_response(response)
 
-    async def _async_api_request(
-        self, endpoint, method="GET", params: dict[str, Any] | None = None
-    ):
-        async with httpx.AsyncClient(
+    def _create_async_client(self):
+        return httpx.AsyncClient(
             auth=self._auth,
             base_url=f"{self._schema}://{self._host}",
             headers={"Content-Type": "application/json"},
-        ) as client:
+        )
+
+    async def _async_api_request(
+        self, endpoint, method="GET", params: dict[str, Any] | None = None
+    ):
+        async with self._create_async_client() as client:
             request: httpx.Request = client.build_request(
                 method=method, url=endpoint, params=params
             )
@@ -79,11 +87,36 @@ class Camera:
             "/cgi-bin/eventManager.cgi", params={"action": "getExposureEvents"}
         )
 
-    def listen_events(self):
-        return self._api_request("/cgi-bin/et")
+    async def async_listen_events(
+        self, filter_events: Iterable[EventMessageTypes] | None = None
+    ):
+        """
+        Asynchronously listen to events.
 
-    @property
+        Args:
+            filter_events (list[EventMessageTypes]|None): a list of events to listen to, or None for all capabilities
+        """  # noqa: E501
+        if filter_events is None:
+            filter_events = utils.indexed_dict_to_list(
+                (await self.async_supported_events)["events"]
+            )
+        filter_events_param = f"[{",".join(filter_events)}]"
+        async with self._create_async_client() as client, client.stream(
+            "GET",
+            "/cgi-bin/eventManager.cgi",
+            params={"action": "attach", "codes": filter_events_param, "heartbeat": 2},
+        ) as stream:
+            i = 1
+            async for txt in stream.aiter_raw():
+                # TODO test and make usable in HASS
+                print(f"Received {i} async message(s).")
+                print(txt)
+                i += 1
+
+    @cached_property
     async def async_serial_number(self):
+        if self.serial_number:
+            return self.serial_number
         return (
             await self._async_api_request(
                 "/cgi-bin/magicBox.cgi", params={"action": "getSerialNo"}
@@ -101,4 +134,10 @@ class Camera:
     async def async_encode_capability(self):
         return await self._async_api_request(
             "/cgi-bin/encode.cgi", params={"action": "getCaps"}
+        )
+
+    @cached_property
+    async def async_supported_events(self):
+        return self._api_request(
+            "/cgi-bin/eventManager.cgi", params={"action": "getExposureEvents"}
         )

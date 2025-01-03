@@ -35,3 +35,8 @@ def parse_key_value_response(response: httpx.Response) -> dict[int | str, Any]:
         current[keysflat[-1]] = val
 
     return ret
+
+
+def indexed_dict_to_list(indexed_dict: dict[int, Any]) -> list[Any]:
+    """Converts a dict that could be a list, into a list."""
+    return [indexed_dict[i] for i, key in enumerate(sorted(indexed_dict.keys()))]
