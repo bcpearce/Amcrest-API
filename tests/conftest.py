@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -5,7 +7,7 @@ import pytest
 @pytest.fixture
 def mock_json_response():
     with open("tests/fixtures/MockJsonPayload.json") as f:
-        yield httpx.Response(200, text=f.read())
+        yield httpx.Response(200, json=json.loads(f.read()))
 
 
 @pytest.fixture

@@ -1,8 +1,10 @@
+import asyncio
 import contextlib
 import inspect
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
+import time
 from typing import Type
 
 import httpx
@@ -89,8 +91,11 @@ def main(
 ) -> None:
     """Print a greeting with a giving name."""
     cam = Camera(host=host, username=username, password=password)
+    print(f"Connecting to {host}")
     try:
-        pprint(getattr(cam, action))
+        cam.set_privacy_mode_on(False)
+        time.sleep(5.0)
+        cam.set_privacy_mode_on(True)
     except httpx.HTTPStatusError as e:
         print(
             f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501

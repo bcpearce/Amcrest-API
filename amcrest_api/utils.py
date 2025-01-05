@@ -1,6 +1,5 @@
 """Utilities."""
 
-import contextlib
 import json
 import re
 from typing import Any
@@ -9,13 +8,19 @@ import httpx
 
 
 def parse_response(response: httpx.Response) -> Any:
-    with contextlib.suppress(json.decoder.JSONDecodeError):
+    content_type: str = response.headers["content-type"]
+    if "text/plain" in content_type:
+        return parse_key_value_response(response)
+    elif "application/json" in content_type:
         return response.json()
-    return parse_key_value_response(response)
+    raise ValueError(f"Response does not contain supported content: {content_type}")
 
 
 def parse_key_value_response(response: httpx.Response) -> dict[int | str, Any]:
     ret: dict[int | str, Any] = {}
+    # The API can simply reply with OK too
+    if response.text.strip() == "OK":
+        return ret
     for line in response.iter_lines():
         keystr, val = line.split("=")
         keysraw = keystr.split(".")

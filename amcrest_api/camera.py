@@ -84,6 +84,12 @@ class Camera:
             params={"action": "getConfig", "name": "Lighting"},
         )
 
+    def set_privacy_mode_on(self, on: bool) -> None:
+        self._api_request(
+            ApiEndpoints.ConfigManager,
+            params={"action": "setConfig", "LeLensMask[0].Enable": on},
+        )
+
     @property
     def encode_capability(self):
         return self._api_request("/cgi-bin/encode.cgi", params={"action": "getCaps"})
@@ -114,7 +120,7 @@ class Camera:
             params={"action": "attach", "codes": filter_events_param, "heartbeat": 2},
         ) as stream:
             i = 1
-            async for txt in stream.aiter_raw():
+            async for txt in stream.aiter_text():
                 # TODO test and make usable in HASS
                 print(f"Received {i} async message(s).")
                 print(txt)
@@ -154,4 +160,10 @@ class Camera:
     async def async_supported_events(self):
         return self._api_request(
             ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
+        )
+
+    async def async_set_privacy_mode_on(self, on: bool) -> None:
+        await self._async_api_request(
+            ApiEndpoints.ConfigManager,
+            params={"action": "setConfig", "LeLensMask[0].Enable": on},
         )
