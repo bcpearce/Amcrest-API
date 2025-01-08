@@ -10,6 +10,7 @@ class ApiEndpoints(StrEnum):
     Encode = "/cgi-bin/encode.cgi"
     EventManager = "/cgi-bin/eventManager.cgi"
     MagicBox = "/cgi-bin/magicBox.cgi"
+    Ptz = "/cgi-bin/ptz.cgi"
     RealtimeStream = "/cam/realmonitor"
     Snapshot = "/cgi-bin/snapshot.cgi"
 

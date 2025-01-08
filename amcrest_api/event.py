@@ -39,7 +39,6 @@ class EventAction(StrEnum):
 
 @dataclass
 class EventMessageData:
-
     headers: dict[str, str]
     content: str | bytes
 
@@ -97,7 +96,7 @@ class VideoMotionEvent(EventBase):
     id: list[int]
     region_name: list[str]
 
-    def __init__(self, action: str, raw_data: str):
+    def __init__(self, action: EventAction, raw_data: str):
         super().__init__(EventMessageType.VideoMotion, action, raw_data)
         data = json.loads(raw_data)
         self.id = data.get("Id", [])
@@ -105,16 +104,20 @@ class VideoMotionEvent(EventBase):
 
 
 def parse_event_message(content: str) -> EventBase:
-
     if content.strip() == EventMessageType.Heartbeat:
         return HeartbeatEvent()
 
     match = re.match(
-        r"^Code=(\w+);action=(\w+);index=(\d+);data=(\{.*\})\s*$", content, re.DOTALL
+        r"^Code=(\w+);action=(\w+);index=(\d+);data=(\{.*\})\s*$",
+        content,
+        re.DOTALL,
     )
-    event_type, action, index, data_raw = match.groups()
+    if match is None:
+        raise ValueError("Message did not match expected event message format")
+
+    event_type, action, _, data_raw = match.groups()
 
     if event_type == EventMessageType.VideoMotion:
-        return VideoMotionEvent(action, data_raw)
+        return VideoMotionEvent(EventAction(action), data_raw)
 
-    return EventBase(event_type, action, data_raw)
+    return EventBase(EventMessageType(event_type), EventAction(action), data_raw)

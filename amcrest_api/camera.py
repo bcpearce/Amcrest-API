@@ -10,11 +10,10 @@ from amcrest_api.config import Config
 
 from . import utils
 from .const import ApiEndpoints, StreamType
-from .event import EventMessageData, EventMessageType, parse_event_message
+from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
 
 
 class Camera:
-
     def __init__(
         self,
         host: str,
@@ -64,7 +63,7 @@ class Camera:
         *,
         heartbeat_seconds: int = 10,
         filter_events: Iterable[EventMessageType] | None = None,
-    ) -> AsyncGenerator[str | None]:
+    ) -> AsyncGenerator[EventBase | None]:
         """
         Asynchronously listen to events.
 
@@ -91,7 +90,7 @@ class Camera:
             async for txt in stream.aiter_text():
                 event_message = EventMessageData(txt)
                 i += 1
-                yield parse_event_message(event_message.content)
+                yield parse_event_message(str(event_message.content))
                 if self._cancel_stream:
                     return
 
@@ -155,6 +154,29 @@ class Camera:
             ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
         )
         return utils.indexed_dict_to_list(response_content["events"])
+
+    async def async_ptz_get_preset_information(
+        self,
+        channel: int = 1,
+    ):
+        response_content = await self._async_api_request(
+            ApiEndpoints.Ptz,
+            params={"action": "getPresets", "channel": channel},
+        )
+        return utils.indexed_dict_to_list(response_content["presets"])
+
+    async def async_ptz_move_to_preset(self, preset_number: int, channel: int = 1):
+        return await self._async_api_request(
+            ApiEndpoints.Ptz,
+            params={
+                "action": "start",
+                "code": "GotoPreset",
+                "channel": channel,
+                "arg1": 0,
+                "arg2": preset_number,
+                "arg3": 0,
+            },
+        )
 
     async def async_set_privacy_mode_on(self, on: bool) -> None:
         await self._async_api_request(

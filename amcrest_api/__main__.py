@@ -1,10 +1,7 @@
 import asyncio
-import contextlib
-import time
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
-from typing import Type
 
 import httpx
 import typer
@@ -86,22 +83,28 @@ def main(
     pprint(cam.rtsp_url)
 
     delay = 30
-
-    async def async_ops():
-        await cam.async_set_privacy_mode_on(False)
-        pprint(await cam.async_supported_events)
-        print("===============")
-        print(f"Listening for {delay} seconds")
-        print("===============")
-        async with asyncio.timeout(delay):
-            async for event in cam.async_listen_events():
-                print(event)
-        print("===============")
-        pprint(await cam.async_network_config)
-
-    asyncio.run(async_ops())
+    listen_events = False
     try:
-        cam.set_privacy_mode_on(False)
+
+        async def async_ops():
+            await cam.async_set_privacy_mode_on(False)
+            pprint(await cam.async_supported_events)
+            presets = await cam.async_ptz_get_preset_information()
+            for preset in presets:
+                print(f"Moving to {preset["Name"]}")
+                await cam.async_ptz_move_to_preset(preset["Index"])
+                await asyncio.sleep(3.0)
+            pprint(await cam.async_network_config)
+            if listen_events:
+                print("===============")
+                print(f"Listening for {delay} seconds")
+                print("===============")
+                async with asyncio.timeout(delay):
+                    async for event in cam.async_listen_events():
+                        print(event)
+                print("===============")
+
+        asyncio.run(async_ops())
     except httpx.HTTPStatusError as e:
         print(
             f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
