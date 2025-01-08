@@ -1,4 +1,8 @@
-"""API Wrapper for Amcrest V3.26"""
+"""
+API Wrapper for Amcrest V3.26
+
+https://support.amcrest.com/hc/en-us/articles/17903073032973-Amcrest-HTTP-API-SDK
+"""
 
 from importlib import metadata as importlib_metadata
 

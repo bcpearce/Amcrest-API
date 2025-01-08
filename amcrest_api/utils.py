@@ -7,9 +7,11 @@ from typing import Any
 import httpx
 
 
-def parse_response(response: httpx.Response) -> Any:
+def parse_response(response: httpx.Response) -> bytes | dict:
     content_type: str = response.headers["content-type"]
-    if "text/plain" in content_type:
+    if "image/jpeg" in content_type:
+        return response.content
+    elif "text/plain" in content_type:
         return parse_key_value_response(response)
     elif "application/json" in content_type:
         return response.json()

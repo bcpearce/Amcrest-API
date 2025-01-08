@@ -1,29 +1,6 @@
 """Constants."""
 
-from enum import StrEnum
-
-
-class EventMessageTypes(StrEnum):
-    """Event Message Types."""
-
-    VideoMotion = "VideoMotion"
-    SmartMotionHuman = "SmartMotionHuman"
-    SmartMotionVehicle = "SmartMotionVehicle"
-    VideoLoss = "VideoLoss"
-    VideoBlind = "VideoBlind"
-    AlarmLocal = "AlarmLocal"
-    StorageNotExist = "StorageNotExist"
-    StorageFailure = "StorageFailure"
-    StorageLowSpace = "StorageLowSpace"
-    AlarmOutput = "AlarmOutput"
-    AudioMutation = "AudioMutation"
-    AudioAnomaly = "AudioAnomaly"
-    CrossLineDetection = "CrossLineDetection"
-    CrossRegionDetection = "CrossRegionDetection"
-    LeftDetection = "LeftDetection"
-    TakenAwayDetection = "TakenAwayDetection"
-    SafetyAbnormal = "SafetyAbnormal"
-    LoginFailure = "LoginFailure"
+from enum import IntEnum, StrEnum
 
 
 class ApiEndpoints(StrEnum):
@@ -33,3 +10,13 @@ class ApiEndpoints(StrEnum):
     Encode = "/cgi-bin/encode.cgi"
     EventManager = "/cgi-bin/eventManager.cgi"
     MagicBox = "/cgi-bin/magicBox.cgi"
+    RealtimeStream = "/cam/realmonitor"
+    Snapshot = "/cgi-bin/snapshot.cgi"
+
+
+class StreamType(IntEnum):
+    """Stream Types."""
+
+    Main = 0
+    SubStream1 = 1
+    SubStream2 = 2

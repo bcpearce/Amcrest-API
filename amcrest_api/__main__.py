@@ -1,10 +1,9 @@
 import asyncio
 import contextlib
-import inspect
+import time
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
-import time
 from typing import Type
 
 import httpx
@@ -79,23 +78,30 @@ def main(
         case_sensitive=False,
         help="Host name or IP Address for Amcrest Camera",
     ),
-    action: str = typer.Option(
-        ...,
-        "-a",
-        "--action",
-        autocompletion=lambda: POSSIBLE_ACTIONS,
-        case_sensitive=True,
-        help="Action to run",
-        prompt="Enter an action to run",
-    ),
 ) -> None:
     """Print a greeting with a giving name."""
     cam = Camera(host=host, username=username, password=password)
+
     print(f"Connecting to {host}")
+    pprint(cam.rtsp_url)
+
+    delay = 30
+
+    async def async_ops():
+        await cam.async_set_privacy_mode_on(False)
+        pprint(await cam.async_supported_events)
+        print("===============")
+        print(f"Listening for {delay} seconds")
+        print("===============")
+        async with asyncio.timeout(delay):
+            async for event in cam.async_listen_events():
+                print(event)
+        print("===============")
+        pprint(await cam.async_network_config)
+
+    asyncio.run(async_ops())
     try:
         cam.set_privacy_mode_on(False)
-        time.sleep(5.0)
-        cam.set_privacy_mode_on(True)
     except httpx.HTTPStatusError as e:
         print(
             f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
@@ -103,5 +109,4 @@ def main(
 
 
 if __name__ == "__main__":
-    with contextlib.suppress(KeyboardInterrupt):
-        app()
+    app()
