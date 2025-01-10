@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Iterable
+from collections.abc import AsyncGenerator, Awaitable
 from functools import cached_property
 from ssl import SSLContext
 from typing import Any
@@ -35,9 +35,7 @@ class Camera:
         """Read a number of properties that should be cached for the API session."""
         config: dict[str, Any] = {}
         config["serial_number"] = await self.async_serial_number
-        config["supported_events"] = utils.indexed_dict_to_list(
-            (await self.async_supported_events)["events"]
-        )
+        config["supported_events"] = await self.async_supported_events
         config["machine_name"] = await self.async_machine_name
         config["network"] = (await self.async_network_config)["Network"]
         config["software_version"] = await self.async_software_version
@@ -62,7 +60,7 @@ class Camera:
         self,
         *,
         heartbeat_seconds: int = 10,
-        filter_events: Iterable[EventMessageType] | None = None,
+        filter_events: list[EventMessageType] | None = None,
     ) -> AsyncGenerator[EventBase | None]:
         """
         Asynchronously listen to events.
@@ -70,9 +68,10 @@ class Camera:
         Args:
             filter_events (list[EventMessageTypes]|None): a list of events to listen to, or None for all capabilities
         """  # noqa: E501
-        if filter_events is None:
-            filter_events = await self.async_supported_events
-        filter_events_param = f"[{",".join(filter_events)}]"
+        filter_events_param = (
+            f"[{",".join(filter_events or await self.async_supported_events)}]"  # type: ignore[arg-type]
+        )
+
         async with (
             self._create_async_client(timeout=heartbeat_seconds * 2) as client,
             client.stream(
@@ -87,12 +86,15 @@ class Camera:
         ):
             self._cancel_stream = False
             i = 0
-            async for txt in stream.aiter_text():
-                event_message = EventMessageData(txt)
-                i += 1
-                yield parse_event_message(str(event_message.content))
-                if self._cancel_stream:
-                    return
+            try:
+                async for txt in stream.aiter_text():
+                    event_message = EventMessageData(txt)
+                    i += 1
+                    yield parse_event_message(str(event_message.content))
+                    if self._cancel_stream:
+                        return
+            finally:
+                await stream.aclose()
 
     @cached_property
     async def async_serial_number(self):
@@ -143,17 +145,21 @@ class Camera:
         )
 
     @property
-    async def async_encode_capability(self):
+    async def async_encode_capability(self) -> Awaitable[dict[str, Any]]:
         return await self._async_api_request(
             ApiEndpoints.Encode, params={"action": "getCaps"}
         )
 
     @property
-    async def async_supported_events(self):
+    async def async_supported_events(self) -> list[EventMessageType]:
         response_content = await self._async_api_request(
             ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
         )
-        return utils.indexed_dict_to_list(response_content["events"])
+        return list(
+            map(
+                EventMessageType, utils.indexed_dict_to_list(response_content["events"])
+            )
+        )
 
     async def async_ptz_get_preset_information(
         self,

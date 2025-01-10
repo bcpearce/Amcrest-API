@@ -108,16 +108,19 @@ def parse_event_message(content: str) -> EventBase:
         return HeartbeatEvent()
 
     match = re.match(
-        r"^Code=(\w+);action=(\w+);index=(\d+);data=(\{.*\})\s*$",
+        r"^Code=(\w+);action=(\w+);index=(\d+)(;data=(\{.*\})|)\s*$",
         content,
         re.DOTALL,
     )
     if match is None:
         raise ValueError("Message did not match expected event message format")
 
-    event_type, action, _, data_raw = match.groups()
+    event_type, action, _ = match.groups()[:3]
+    # Data field is optional
+    if len(match.groups()) == 5:
+        raw_data = match.groups()[4]
 
     if event_type == EventMessageType.VideoMotion:
-        return VideoMotionEvent(EventAction(action), data_raw)
+        return VideoMotionEvent(EventAction(action), raw_data)
 
-    return EventBase(EventMessageType(event_type), EventAction(action), data_raw)
+    return EventBase(EventMessageType(event_type), EventAction(action), raw_data)

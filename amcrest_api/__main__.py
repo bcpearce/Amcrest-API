@@ -82,18 +82,13 @@ def main(
     print(f"Connecting to {host}")
     pprint(cam.rtsp_url)
 
-    delay = 30
-    listen_events = False
+    delay = 500
+    listen_events = True
     try:
 
         async def async_ops():
             await cam.async_set_privacy_mode_on(False)
-            pprint(await cam.async_supported_events)
-            presets = await cam.async_ptz_get_preset_information()
-            for preset in presets:
-                print(f"Moving to {preset["Name"]}")
-                await cam.async_ptz_move_to_preset(preset["Index"])
-                await asyncio.sleep(3.0)
+            pprint(await cam.async_read_physical_config())
             pprint(await cam.async_network_config)
             if listen_events:
                 print("===============")

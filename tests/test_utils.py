@@ -1,5 +1,6 @@
-from amcrest_api import utils
 import pytest
+
+from amcrest_api import utils
 
 
 def test_parse_json(mock_json_response, snapshot):
