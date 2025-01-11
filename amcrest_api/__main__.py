@@ -79,9 +79,8 @@ def main(
 
     async def async_ops():
         async with Camera(host=host, username=username, password=password) as cam:
-            pprint(await cam.async_serial_number)
-            pprint(await cam.async_get_privacy_mode_on())
-            pprint(await cam.async_lighting_config)
+            pprint(await cam.async_ptz_preset_info)
+            pprint(await cam.async_read_physical_config())
 
     asyncio.run(async_ops())
 

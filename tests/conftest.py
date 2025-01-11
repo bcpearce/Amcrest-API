@@ -1,6 +1,7 @@
 """Configuration for Tests."""
 
 import json
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 import httpx
@@ -54,19 +55,21 @@ def mock_camera_server_fixture(httpserver: HTTPServer) -> HTTPServer:
             url.path, query_string=url.query_string
         ).respond_with_data(d["content"])
 
-    load_fixture("tests/fixtures/mock_responses/get_lelensmask.json")
-    load_fixture("tests/fixtures/mock_responses/lighting_config.json")
-    load_fixture("tests/fixtures/mock_responses/serial_number.json")
+    fixture_path = Path("tests/fixtures/mock_responses")
+    for path in fixture_path.iterdir():
+        load_fixture(path)
     return httpserver
 
 
 @pytest.fixture
-def camera(mock_camera_server: HTTPServer) -> Camera:
+async def camera(mock_camera_server: HTTPServer) -> AsyncGenerator[Camera]:
     """Fixture which communicates with mock camera server."""
-    return Camera(
+    cam = Camera(
         mock_camera_server.host,
         "testuser",
         "testpassword",
         port=mock_camera_server.port,
         verify=False,
     )
+    yield cam
+    await cam.aclose_client()
