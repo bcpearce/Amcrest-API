@@ -6,18 +6,18 @@ from enum import IntEnum, StrEnum
 class ApiEndpoints(StrEnum):
     """API Endpoints."""
 
-    ConfigManager = "/cgi-bin/configManager.cgi"
-    Encode = "/cgi-bin/encode.cgi"
-    EventManager = "/cgi-bin/eventManager.cgi"
-    MagicBox = "/cgi-bin/magicBox.cgi"
-    Ptz = "/cgi-bin/ptz.cgi"
-    RealtimeStream = "/cam/realmonitor"
-    Snapshot = "/cgi-bin/snapshot.cgi"
+    CONFIG_MANAGER = "/cgi-bin/configManager.cgi"
+    ENCODE = "/cgi-bin/encode.cgi"
+    EVENT_MANAGER = "/cgi-bin/eventManager.cgi"
+    MAGIC_BOX = "/cgi-bin/magicBox.cgi"
+    PTZ = "/cgi-bin/ptz.cgi"
+    REALTIME_STREAM = "/cam/realmonitor"
+    SNAPSHOT = "/cgi-bin/snapshot.cgi"
 
 
 class StreamType(IntEnum):
     """Stream Types."""
 
-    Main = 0
-    SubStream1 = 1
-    SubStream2 = 2
+    MAIN = 0
+    SUBSTREAM1 = 1
+    SUBSTREAM2 = 2

@@ -51,7 +51,7 @@ class Camera:
         return Config(**config)
 
     @property
-    def rtsp_url(self, *, channel: int = 1, subtype: int = StreamType.Main):
+    def rtsp_url(self, *, channel: int = 1, subtype: int = StreamType.MAIN):
         """
         Returns the streaming URL including credentials.
         ***Warning*** this will be in plaintext instead of digest form.
@@ -61,7 +61,7 @@ class Camera:
             user=self._username,
             password=self._password,
             host=self._host,
-            path=ApiEndpoints.RealtimeStream,
+            path=ApiEndpoints.REALTIME_STREAM,
             query={"channel": channel, "subtype": subtype},
         )
 
@@ -87,7 +87,7 @@ class Camera:
             self._create_async_client(timeout=heartbeat_seconds * 2) as client,
             client.stream(
                 "GET",
-                ApiEndpoints.EventManager,
+                ApiEndpoints.EVENT_MANAGER,
                 params={
                     "action": "attach",
                     "codes": filter_events_param,
@@ -112,7 +112,7 @@ class Camera:
         """Get serial number."""
         return (
             await self._async_api_request(
-                ApiEndpoints.MagicBox, params={"action": "getSerialNo"}
+                ApiEndpoints.MAGIC_BOX, params={"action": "getSerialNo"}
             )
         )["sn"]
 
@@ -120,7 +120,7 @@ class Camera:
     async def async_general_config(self):
         """Get general config."""
         return await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "getConfig", "name": "General"},
         )
 
@@ -128,7 +128,7 @@ class Camera:
     async def async_network_config(self):
         """Get network config."""
         return await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "getConfig", "name": "Network"},
         )
 
@@ -137,7 +137,7 @@ class Camera:
         """Get software version."""
         return (
             await self._async_api_request(
-                ApiEndpoints.MagicBox, params={"action": "getSoftwareVersion"}
+                ApiEndpoints.MAGIC_BOX, params={"action": "getSoftwareVersion"}
             )
         )["version"]
 
@@ -150,7 +150,7 @@ class Camera:
     async def async_snap_config(self):
         """Get snap config."""
         return await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "getConfig", "name": "Snap"},
         )
 
@@ -158,7 +158,7 @@ class Camera:
     async def async_lighting_config(self):
         """Get lighting config."""
         return await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "getConfig", "name": "Lighting"},
         )
 
@@ -166,14 +166,14 @@ class Camera:
     async def async_encode_capability(self) -> Awaitable[dict[str, Any]]:
         """Get encoding capabilities."""
         return await self._async_api_request(
-            ApiEndpoints.Encode, params={"action": "getCaps"}
+            ApiEndpoints.ENCODE, params={"action": "getCaps"}
         )
 
     @property
     async def async_supported_events(self) -> list[EventMessageType]:
         """Get a list of supported events."""
         response_content = await self._async_api_request(
-            ApiEndpoints.EventManager, params={"action": "getExposureEvents"}
+            ApiEndpoints.EVENT_MANAGER, params={"action": "getExposureEvents"}
         )
         return list(
             map(
@@ -188,7 +188,7 @@ class Camera:
     ) -> list[PtzPresetData]:
         """Asynchronously get the preset information."""
         response_content = await self._async_api_request(
-            ApiEndpoints.Ptz,
+            ApiEndpoints.PTZ,
             params={"action": "getPresets", "channel": channel},
         )
         return [
@@ -199,7 +199,7 @@ class Camera:
     async def async_ptz_move_to_preset(self, preset_number: int, channel: int = 1):
         """Asynchronously move to a preset."""
         return await self._async_api_request(
-            ApiEndpoints.Ptz,
+            ApiEndpoints.PTZ,
             params={
                 "action": "start",
                 "code": "GotoPreset",
@@ -213,14 +213,14 @@ class Camera:
     async def async_set_privacy_mode_on(self, on: bool) -> None:
         """Set privacy mode on or off."""
         await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "setConfig", "LeLensMask[0].Enable": on},
         )
 
     async def async_get_privacy_mode_on(self) -> bool:
         """Get privacy mode state."""
         response = await self._async_api_request(
-            ApiEndpoints.ConfigManager,
+            ApiEndpoints.CONFIG_MANAGER,
             params={"action": "getConfig", "name": "LeLensMask"},
         )
         if (enabled := response["LeLensMask"][0]["Enable"].lower()) in [
@@ -233,7 +233,7 @@ class Camera:
     async def async_snapshot(self, channel: int = 1, subtype: int = 0) -> bytes:
         """Get a still frame from the camera."""
         response: bytes = await self._async_api_request(
-            ApiEndpoints.Snapshot, params={"channel": channel, "type": subtype}
+            ApiEndpoints.SNAPSHOT, params={"channel": channel, "type": subtype}
         )
         return response
 

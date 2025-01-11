@@ -79,26 +79,9 @@ def main(
 
     async def async_ops():
         async with Camera(host=host, username=username, password=password) as cam:
-            print(f"Connecting to {host}")
-            pprint(cam.rtsp_url)
-
-            delay = 500
-            listen_events = True
-            await cam.async_set_privacy_mode_on(True)
-            pprint(await cam.async_read_physical_config())
-            pprint(await cam.async_network_config)
+            pprint(await cam.async_serial_number)
             pprint(await cam.async_get_privacy_mode_on())
-            pprint(await cam.async_ptz_preset_info)
-            await cam.async_set_privacy_mode_on(False)
-            await asyncio.sleep(2.0)
-            if listen_events:
-                print("===============")
-                print(f"Listening for {delay} seconds")
-                print("===============")
-                async with asyncio.timeout(delay):
-                    async for event in cam.async_listen_events():
-                        print(event)
-                print("===============")
+            pprint(await cam.async_lighting_config)
 
     asyncio.run(async_ops())
 
