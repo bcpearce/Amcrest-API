@@ -4,6 +4,9 @@ stages:
 
 variables:
   PYTHON_VERSION: 3.13
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+  POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/pypoetry
+  PRE_COMMIT_HOME: $CI_PROJECT_DIR/.cache/pre-commit
 
 default:
   image: python:$PYTHON_VERSION
@@ -12,6 +15,7 @@ default:
       - .cache/pip
       - .cache/pypoetry
       - .cache/pre-commit
+
   before_script:
     - python --version ; pip --version
     - pip install --upgrade pip
