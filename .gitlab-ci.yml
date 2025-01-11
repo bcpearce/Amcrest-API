@@ -24,7 +24,7 @@ pytest:
     TEST_RESULTS_FILE: "test_results.xml"
     TEST_COVERAGE_FILE: "coverage.xml"
   script:
-    - pytest --junitxml $TEST_RESULTS_FILE
+    - pytest --junitxml $TEST_RESULTS_FILE --cov=amcrest_api --cov-report=xml
   coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
     when: always
@@ -37,6 +37,3 @@ pytest:
       coverage_report:
         coverage_format: cobertura
         path: $TEST_COVERAGE_FILE
-
-
-  

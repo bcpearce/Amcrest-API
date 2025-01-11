@@ -16,6 +16,7 @@ pytest-httpserver = "^1.1.0"
 pytest = "^8.3.4"
 syrupy = "^4.8.0"
 pytest-asyncio = "^0.25.2"
+pytest-cov = "^6.0.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.14.1"
@@ -46,3 +47,4 @@ requires = ["poetry-core"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+addopts = "--cov=<project-name> --cov-report=xml"
