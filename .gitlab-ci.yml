@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
 
 variables:
@@ -17,6 +18,10 @@ default:
     - pip install poetry --upgrade
     - poetry install
     - source `poetry env info --path`/bin/activate
+
+pre-commit:
+  stage: lint
+  script: pre-commit run --all-files
 
 pytest:
   stage: test
