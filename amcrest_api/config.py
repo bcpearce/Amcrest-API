@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-@dataclass(kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class Config:
     """A Config containing elements unlikely to change during the API Session."""
 

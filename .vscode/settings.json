@@ -1,4 +1,7 @@
 {
+  "pylint.interpreter": [
+    "./.venv/bin/python"
+  ],
   "python.testing.pytestArgs": [
     "tests"
   ],

@@ -3,7 +3,6 @@ from enum import Enum
 from functools import cached_property
 from pprint import pprint
 
-import httpx
 import typer
 from rich.console import Console
 
@@ -77,19 +76,21 @@ def main(
     ),
 ) -> None:
     """Print a greeting with a giving name."""
-    cam = Camera(host=host, username=username, password=password)
 
-    print(f"Connecting to {host}")
-    pprint(cam.rtsp_url)
+    async def async_ops():
+        async with Camera(host=host, username=username, password=password) as cam:
+            print(f"Connecting to {host}")
+            pprint(cam.rtsp_url)
 
-    delay = 500
-    listen_events = True
-    try:
-
-        async def async_ops():
-            await cam.async_set_privacy_mode_on(False)
+            delay = 500
+            listen_events = True
+            await cam.async_set_privacy_mode_on(True)
             pprint(await cam.async_read_physical_config())
             pprint(await cam.async_network_config)
+            pprint(await cam.async_get_privacy_mode_on())
+            pprint(await cam.async_ptz_preset_info)
+            await cam.async_set_privacy_mode_on(False)
+            await asyncio.sleep(2.0)
             if listen_events:
                 print("===============")
                 print(f"Listening for {delay} seconds")
@@ -99,11 +100,7 @@ def main(
                         print(event)
                 print("===============")
 
-        asyncio.run(async_ops())
-    except httpx.HTTPStatusError as e:
-        print(
-            f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
-        )
+    asyncio.run(async_ops())
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+"""Events for Amcrest Camera."""
+
 import json
 import re
 from dataclasses import dataclass
@@ -39,6 +41,8 @@ class EventAction(StrEnum):
 
 @dataclass
 class EventMessageData:
+    """Class storing generic event data."""
+
     headers: dict[str, str]
     content: str | bytes
 
@@ -104,11 +108,12 @@ class VideoMotionEvent(EventBase):
 
 
 def parse_event_message(content: str) -> EventBase:
+    """Parse an event message."""
     if content.strip() == EventMessageType.Heartbeat:
         return HeartbeatEvent()
 
     match = re.match(
-        r"^Code=(\w+);action=(\w+);index=(\d+)(;data=(\{.*\})|)\s*$",
+        r"^Code=(\w+);action=(\w+);index=(\d+)(;data=(\{.*\})|;data=null|)\s*$",
         content,
         re.DOTALL,
     )
@@ -117,8 +122,7 @@ def parse_event_message(content: str) -> EventBase:
 
     event_type, action, _ = match.groups()[:3]
     # Data field is optional
-    if len(match.groups()) == 5:
-        raw_data = match.groups()[4]
+    raw_data = match.groups()[4] if len(match.groups()) == 5 else ""
 
     if event_type == EventMessageType.VideoMotion:
         return VideoMotionEvent(EventAction(action), raw_data)
