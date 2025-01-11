@@ -1,7 +1,7 @@
 """Configuration for Tests."""
 
 import json
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator  # pylint: disable=no-name-in-module
 from pathlib import Path
 
 import httpx
@@ -64,12 +64,11 @@ def mock_camera_server_fixture(httpserver: HTTPServer) -> HTTPServer:
 @pytest.fixture
 async def camera(mock_camera_server: HTTPServer) -> AsyncGenerator[Camera]:
     """Fixture which communicates with mock camera server."""
-    cam = Camera(
+    async with Camera(
         mock_camera_server.host,
         "testuser",
         "testpassword",
         port=mock_camera_server.port,
         verify=False,
-    )
-    yield cam
-    await cam.aclose_client()
+    ) as cam:
+        yield cam

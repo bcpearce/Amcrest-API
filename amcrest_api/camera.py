@@ -1,6 +1,9 @@
 """Amcrest Camera"""
 
-from collections.abc import AsyncGenerator, Awaitable
+from collections.abc import (  # pylint: disable=no-name-in-module
+    AsyncGenerator,
+    Awaitable,
+)
 from functools import cached_property
 from ssl import SSLContext
 from typing import Any
