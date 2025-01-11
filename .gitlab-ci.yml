@@ -1,6 +1,7 @@
 stages:
   - lint
   - test
+  - build
 
 variables:
   PYTHON_VERSION: 3.13
@@ -46,3 +47,10 @@ pytest:
       coverage_report:
         coverage_format: cobertura
         path: $TEST_COVERAGE_FILE
+
+build-dist:
+  stage: build
+  script: poetry build
+  artifacts:
+    paths:
+      - dist/
