@@ -1,10 +1,20 @@
-[tool.poetry]
-authors = ["Benjamin Pearce <amcrest_api@bcpearce.com>"]
+[project]
+authors = [
+  {name="Benjamin Pearce", email="amcrest_api@bcpearce.com"}
+]
 description = "Python Wrapper for Amcrest API v3.26 or greater."
 license = "MIT"
 name = "amcrest-api"
 readme = "README.md"
 version = "0.1.0"
+requires-python = ">=3.8"
+
+[tool.poetry]
+packages = [{include = "amcrest_api"}]
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 httpx = "^0.27.2"
@@ -40,10 +50,6 @@ select = [
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "double"
-
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

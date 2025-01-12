@@ -84,7 +84,7 @@ class Camera:
                 a list of events to listen to, or None for all capabilities
         """  # noqa: E501
         filter_events = filter_events or await self.async_supported_events
-        filter_events_param = f"[{",".join(filter_events)}]"  # type: ignore[arg-type]
+        filter_events_param = f"[{','.join(filter_events)}]"  # type: ignore[arg-type]
 
         async with (
             self._create_async_client(timeout=heartbeat_seconds * 2) as client,

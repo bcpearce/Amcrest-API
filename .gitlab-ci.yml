@@ -48,6 +48,10 @@ pytest:
         coverage_format: cobertura
         path: $TEST_COVERAGE_FILE
 
+cli_test:
+  stage: test
+  script: python -m amcrest_api --version
+
 build-dist:
   stage: build
   script: poetry build
