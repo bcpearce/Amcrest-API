@@ -4,7 +4,7 @@ authors = [
 ]
 description = "Python Wrapper for Amcrest API v3.26 or greater."
 license = "MIT"
-name = "amcrest-api"
+name = "amcrest_api"
 readme = "README.md"
 version = "0.1.0"
 requires-python = ">=3.8"
