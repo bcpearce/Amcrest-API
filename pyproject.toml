@@ -53,7 +53,7 @@ quote-style = "double"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-addopts = "--cov=<project-name> --cov-report=xml"
+addopts = "--cov=amcrest_api --cov-report=xml --junitxml test_results.xml"
 
 [tool.coverage.run]
 omit = ["amcrest_api/__main__.py"]
