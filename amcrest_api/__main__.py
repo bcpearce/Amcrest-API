@@ -36,7 +36,7 @@ POSSIBLE_ACTIONS = [
 def version_callback(print_version: bool) -> None:
     """Print the version of the package."""
     if print_version:
-        console.print(f"[yellow]amcrest-api[/] version: [bold blue]{version}[/]")
+        print(version)
         raise typer.Exit()
 
 

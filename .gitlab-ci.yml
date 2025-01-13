@@ -73,7 +73,7 @@ publish:
     url: https://test.pypi.org/project/amcrest_api/${CI_COMMIT_TAG}
   script:
     - poetry config repositories.${REPO_NAME} $REPO_URL
-    - poetry config pypi-token.testpypi $PYPY_TEST_TOKEN
+    - poetry config pypi-token.testpypi $PYPI_TEST_TOKEN
     - poetry publish -r $REPO_NAME
 
 release:
