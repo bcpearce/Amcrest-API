@@ -6,7 +6,7 @@ description = "Python Wrapper for Amcrest API v3.26 or greater."
 license = "MIT"
 name = "amcrest_api"
 readme = "README.md"
-version = "0.1.0"
+version = "0.1.0_alpha1"
 requires-python = ">=3.8"
 
 [tool.poetry]
