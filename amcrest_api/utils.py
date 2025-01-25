@@ -1,22 +1,27 @@
 """Utilities."""
 
-import json
 import re
 from typing import Any
 
 import httpx
 
 
-def parse_response(response: httpx.Response) -> Any:
-    try:
+def parse_response(response: httpx.Response) -> bytes | dict:
+    content_type: str = response.headers["content-type"]
+    if "image/jpeg" in content_type:
+        return response.content
+    elif "text/plain" in content_type:
+        return parse_key_value_response(response)
+    elif "application/json" in content_type:
         return response.json()
-    except json.decoder.JSONDecodeError:
-        pass
-    return parse_key_value_response(response)
+    raise ValueError(f"Response does not contain supported content: {content_type}")
 
 
 def parse_key_value_response(response: httpx.Response) -> dict[int | str, Any]:
     ret: dict[int | str, Any] = {}
+    # The API can simply reply with OK too
+    if response.text.strip() == "OK":
+        return ret
     for line in response.iter_lines():
         keystr, val = line.split("=")
         keysraw = keystr.split(".")
@@ -35,3 +40,8 @@ def parse_key_value_response(response: httpx.Response) -> dict[int | str, Any]:
         current[keysflat[-1]] = val
 
     return ret
+
+
+def indexed_dict_to_list(indexed_dict: dict[int, Any]) -> list[Any]:
+    """Converts a dict that could be a list, into a list."""
+    return [indexed_dict[i] for i, key in enumerate(sorted(indexed_dict.keys()))]

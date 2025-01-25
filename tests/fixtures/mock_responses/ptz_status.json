@@ -1,0 +1,4 @@
+{
+  "content": "status.Action=AbsoluteMove\r\nstatus.MoveStatus=Idle\r\nstatus.PTS=0\r\nstatus.Postion[0]=242.700000\r\nstatus.Postion[1]=9.600000\r\nstatus.Postion[2]=1.000000\r\nstatus.PresetID=0\r\nstatus.Sequence=0\r\nstatus.UTC=0\r\nstatus.ZoomStatus=Idle\r\n",
+  "raw_path": "/cgi-bin/ptz.cgi?action=getStatus&channel=1"
+}

@@ -1,0 +1,4 @@
+{
+  "content": "events[0]=AudioAnomaly\r\nevents[1]=AudioMutation\r\nevents[2]=LoginFailure\r\nevents[3]=SafetyAbnormal\r\nevents[4]=StorageFailure\r\nevents[5]=StorageLowSpace\r\nevents[6]=StorageNotExist\r\nevents[7]=VideoBlind\r\nevents[8]=VideoMotion\r\n",
+  "raw_path": "/cgi-bin/eventManager.cgi?action=getExposureEvents"
+}

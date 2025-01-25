@@ -1,0 +1,4 @@
+{
+  "content": "table.RTSP.Enable=true\r\ntable.RTSP.Port=554\r\ntable.RTSP.RTP.EndPort=40000\r\ntable.RTSP.RTP.StartPort=20000\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=RTSP"
+}

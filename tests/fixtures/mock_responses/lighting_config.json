@@ -1,0 +1,4 @@
+{
+  "content": "table.Lighting[0][0].Correction=50\r\ntable.Lighting[0][0].MiddleLight[0].Angle=50\r\ntable.Lighting[0][0].MiddleLight[0].Light=50\r\ntable.Lighting[0][0].Mode=Auto\r\ntable.Lighting[0][0].Sensitive=3\r\ntable.Lighting[0][1].Correction=50\r\ntable.Lighting[0][1].MiddleLight[0].Angle=50\r\ntable.Lighting[0][1].MiddleLight[0].Light=100\r\ntable.Lighting[0][1].Mode=Manual\r\ntable.Lighting[0][1].Sensitive=3\r\ntable.Lighting[0][2].Correction=50\r\ntable.Lighting[0][2].MiddleLight[0].Angle=50\r\ntable.Lighting[0][2].MiddleLight[0].Light=45\r\ntable.Lighting[0][2].Mode=Auto\r\ntable.Lighting[0][2].Sensitive=3\r\ntable.Lighting[0][3].Correction=50\r\ntable.Lighting[0][3].MiddleLight[0].Angle=50\r\ntable.Lighting[0][3].MiddleLight[0].Light=83\r\ntable.Lighting[0][3].Mode=Auto\r\ntable.Lighting[0][3].Sensitive=3\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=Lighting"
+}
