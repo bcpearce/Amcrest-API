@@ -11,7 +11,7 @@ repos:
     - id: pretty-format-json
       args: [ --autofix ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    rev: v0.9.1
     hooks:
     - id: ruff
       args: [ --fix ]
@@ -20,3 +20,20 @@ repos:
     rev: 'v1.14.1'  # Use the sha / tag you want to point at
     hooks:
     -   id: mypy
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+    - id: codespell
+      exclude: "^tests/fixtures/mock_responses|uv.lock|requirements.txt"
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.5.21
+    hooks:
+      - id: uv-lock
+      - id: uv-export
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json

@@ -1,13 +1,16 @@
-import asyncio
+"""Main"""
+
 from enum import Enum
+from functools import cached_property
 from pprint import pprint
 
-import httpx
 import typer
 from rich.console import Console
+from sshkeyboard import listen_keyboard
 
-from amcrest_api import version
-from amcrest_api.camera import Camera
+from . import version
+from .camera import Camera
+from .ptz import PtzRelativeMove
 
 
 class Color(str, Enum):
@@ -26,11 +29,17 @@ app = typer.Typer(
 )
 console = Console()
 
+POSSIBLE_ACTIONS = [
+    attr
+    for attr, value in vars(Camera).items()
+    if isinstance(value, (cached_property, property))
+]
+
 
 def version_callback(print_version: bool) -> None:
     """Print the version of the package."""
     if print_version:
-        console.print(f"[yellow]amcrest-api[/] version: [bold blue]{version}[/]")
+        print(version)
         raise typer.Exit()
 
 
@@ -70,26 +79,42 @@ def main(
     ),
 ) -> None:
     """Print a greeting with a giving name."""
+
     cam = Camera(host=host, username=username, password=password)
-    try:
-        pprint("Testing Sync Methods")
-        pprint(cam.general_config)
-        pprint(cam.serial_number)
-        pprint(cam.snap_config)
-        pprint(cam.encode_capability)
-        pprint(cam.supported_events)
-        print("Testing Async Methods")
+    print("Listening for keypresses...")
 
-        async def async_props():
-            pprint(await cam.async_serial_number)
-            pprint(await cam.async_snap_config)
-            pprint(await cam.async_encode_capability)
+    async def on_press(key):
+        if key == "up":
+            await cam.async_ptz_move_relative(PtzRelativeMove(vertical=0.1))
+        elif key == "down":
+            await cam.async_ptz_move_relative(PtzRelativeMove(vertical=-0.1))
+        elif key == "left":
+            await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=-0.05))
+        elif key == "right":
+            await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=0.05))
 
-        asyncio.run(async_props())
-    except httpx.HTTPStatusError as e:
-        print(
-            f"Error response {e.response.status_code} while requesting {e.request.url}"  # noqa: E501
-        )
+        if key == "space":
+            pm = await cam.async_get_privacy_mode_on()
+            await cam.async_set_privacy_mode_on(not pm)
+
+        if key == "l":
+            lights = await cam.async_lighting_config
+            pprint(lights)
+
+        if key == "c":
+            pprint(await cam.async_get_fixed_config())
+
+        if key == "#":
+            pprint(f"Extra Streams: {await cam.async_max_extra_stream}")
+
+        if key == "m":
+            try:
+                async for event in cam.async_listen_events():
+                    print(event)
+            except KeyboardInterrupt:
+                pass
+
+    listen_keyboard(on_press=on_press)
 
 
 if __name__ == "__main__":

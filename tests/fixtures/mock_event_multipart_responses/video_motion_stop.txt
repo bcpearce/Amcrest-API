@@ -1,0 +1,4 @@
+Code=VideoMotion;action=Stop;index=0;data={
+   "Id" : [ 0 ],
+   "RegionName" : [ "Region1" ]
+}

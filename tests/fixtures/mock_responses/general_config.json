@@ -1,0 +1,4 @@
+{
+  "content": "table.General.LocalNo=8\r\ntable.General.LockLoginEnable=true\r\ntable.General.LockLoginTimes=30\r\ntable.General.LoginFailLockTime=300\r\ntable.General.MachineName=AMC0TEST_CAMERA\r\ntable.General.MaxOnlineTime=3600\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=General"
+}

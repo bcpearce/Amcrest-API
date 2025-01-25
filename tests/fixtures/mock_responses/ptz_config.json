@@ -1,0 +1,4 @@
+{
+  "content": "presets[0].Index=1\r\npresets[0].Name=Preset1\r\npresets[0].Type=0\r\npresets[1].Index=2\r\npresets[1].Name=Preset2\r\npresets[1].Type=0\r\npresets[2].Index=3\r\npresets[2].Name=Preset3\r\npresets[2].Type=0\r\npresets[3].Index=5\r\npresets[3].Name=Preset5\r\npresets[3].Type=0\r\n",
+  "raw_path": "/cgi-bin/ptz.cgi?action=getPresets&channel=1"
+}

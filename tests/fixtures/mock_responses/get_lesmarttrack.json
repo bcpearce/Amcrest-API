@@ -1,0 +1,4 @@
+{
+  "content": "table.LeSmartTrack[0].Enable=false\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=LeSmartTrack"
+}
