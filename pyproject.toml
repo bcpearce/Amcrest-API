@@ -26,6 +26,7 @@ test = [
     "syrupy>=0.2.0",
 ]
 cli = [
+    "aioconsole>=0.8.1",
     "sshkeyboard>=2.3.1",
     "typer>=0.15.1",
 ]

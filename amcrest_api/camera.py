@@ -242,7 +242,51 @@ class Camera:
             for preset in utils.indexed_dict_to_list(response_content["presets"])
         ]
 
-    async def async_ptz_move_to_preset(self, preset_number: int, channel: int = 1):
+    async def async_set_ptz_preset(
+        self, preset: PtzPresetData, channel: int = 1
+    ) -> None:
+        """Asynchronously save the current position as a preset."""
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "start",
+                "code": "SetPreset",
+                "channel": channel,
+                "arg1": 0,
+                "arg2": preset.index,
+                "arg3": 0,
+            },
+        )
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "setPreset",
+                "channel": channel,
+                "arg1": preset.index,
+                "arg2": preset.name,
+            },
+        )
+
+    async def async_clear_ptz_preset(
+        self, preset: PtzPresetData | int, channel: int = 1
+    ) -> None:
+        """Asynchronously delete a preset."""
+        index = preset.index if isinstance(preset, PtzPresetData) else preset
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "start",
+                "code": "ClearPreset",
+                "channel": channel,
+                "arg1": 0,
+                "arg2": index,
+                "arg3": 0,
+            },
+        )
+
+    async def async_ptz_move_to_preset(
+        self, preset_number: int, channel: int = 1
+    ) -> None:
         """Asynchronously move to a preset."""
         return await self._async_api_request(
             ApiEndpoints.PTZ,
