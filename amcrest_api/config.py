@@ -20,5 +20,5 @@ class Config:
     serial_number: str
     session_physical_address: str
     supported_events: list[EventMessageType]
-    supported_streams: list[StreamTypeName]
+    supported_streams: dict[StreamType, StreamTypeName]
     software_version: str
