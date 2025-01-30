@@ -16,7 +16,7 @@ from amcrest_api.error import UnsupportedStreamSubtype
 
 from . import utils
 from .config import Config
-from .const import ApiEndpoints, StreamType
+from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
 from .ptz import (
     PtzAccuratePosition,
@@ -63,6 +63,11 @@ class Camera:
             config["software_version"] = await self.async_software_version
             config["ptz_capabilities"] = await self.async_ptz_capabilities
             config["max_extra_stream"] = await self.async_max_extra_stream
+            config["supported_streams"] = {
+                k: v
+                for k, v in STREAM_TYPE_DICT.items()
+                if k <= config["max_extra_stream"]
+            }
             for _, value in config["network"].items():
                 if isinstance(value, dict) and value.get("IPAddress") == self._host:
                     config["session_physical_address"] = value["PhysicalAddress"]
