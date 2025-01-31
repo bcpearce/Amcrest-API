@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from amcrest_api.const import StreamType
+from amcrest_api.const import StreamType, StreamTypeName
 
 from .event import EventMessageType
 from .ptz import PtzCapabilityData
@@ -20,4 +20,5 @@ class Config:
     serial_number: str
     session_physical_address: str
     supported_events: list[EventMessageType]
+    supported_streams: dict[StreamType, StreamTypeName]
     software_version: str

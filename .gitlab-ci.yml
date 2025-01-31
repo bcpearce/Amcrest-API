@@ -88,4 +88,4 @@ release:
     assets:
       links:
       - name: "PyPI"
-      - url: https://pypi.org/project/amcrest_api/
+        url: https://pypi.org/project/amcrest_api/

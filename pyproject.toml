@@ -1,6 +1,6 @@
 [project]
 name = "amcrest_api"
-version = "0.1.0a2"
+version = "0.1.0a3"
 authors = [
   {name="Benjamin Pearce", email="amcrest_api@bcpearce.com"}
 ]
@@ -26,6 +26,7 @@ test = [
     "syrupy>=0.2.0",
 ]
 cli = [
+    "aioconsole>=0.8.1",
     "sshkeyboard>=2.3.1",
     "typer>=0.15.1",
 ]
