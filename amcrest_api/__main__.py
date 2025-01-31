@@ -3,7 +3,7 @@
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
-
+import asyncio
 import typer
 from rich.console import Console
 from sshkeyboard import listen_keyboard
@@ -81,6 +81,12 @@ def main(
     """Print a greeting with a giving name."""
 
     cam = Camera(host=host, username=username, password=password)
+
+    async def print_config(cam: Camera):
+        pprint(await cam.async_get_fixed_config())
+
+    asyncio.run(print_config(cam))
+
     print("Listening for keypresses...")
 
     async def on_press(key):
