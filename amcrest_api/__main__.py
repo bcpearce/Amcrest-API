@@ -1,9 +1,10 @@
 """Main"""
 
+import asyncio
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
-import asyncio
+
 import typer
 from rich.console import Console
 from sshkeyboard import listen_keyboard
