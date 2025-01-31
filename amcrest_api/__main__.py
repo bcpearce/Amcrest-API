@@ -1,5 +1,6 @@
 """Main"""
 
+import asyncio
 from enum import Enum
 from functools import cached_property
 from pprint import pprint
@@ -10,7 +11,7 @@ from sshkeyboard import listen_keyboard
 
 from . import version
 from .camera import Camera
-from .ptz import PtzRelativeMove
+from .ptz import PtzPresetData, PtzRelativeMove
 
 
 class Color(str, Enum):
@@ -81,38 +82,75 @@ def main(
     """Print a greeting with a giving name."""
 
     cam = Camera(host=host, username=username, password=password)
+
+    async def print_config(cam: Camera):
+        pprint(await cam.async_get_fixed_config())
+
+    asyncio.run(print_config(cam))
+
     print("Listening for keypresses...")
 
     async def on_press(key):
-        if key == "up":
-            await cam.async_ptz_move_relative(PtzRelativeMove(vertical=0.1))
-        elif key == "down":
-            await cam.async_ptz_move_relative(PtzRelativeMove(vertical=-0.1))
-        elif key == "left":
-            await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=-0.05))
-        elif key == "right":
-            await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=0.05))
+        try:
+            if key == "up":
+                await cam.async_ptz_move_relative(PtzRelativeMove(vertical=0.1))
+            elif key == "down":
+                await cam.async_ptz_move_relative(PtzRelativeMove(vertical=-0.1))
+            elif key == "left":
+                await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=-0.05))
+            elif key == "right":
+                await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=0.05))
 
-        if key == "space":
-            pm = await cam.async_get_privacy_mode_on()
-            await cam.async_set_privacy_mode_on(not pm)
+            SET_PRESET_MAP = {
+                "!": "1",
+                "@": "2",
+                "#": "3",
+                "$": "4",
+                "%": "5",
+                "^": "6",
+                "&": "7",
+                "*": "8",
+            }
+            if key in SET_PRESET_MAP.values():
+                await cam.async_ptz_move_to_preset(int(key))
 
-        if key == "l":
-            lights = await cam.async_lighting_config
-            pprint(lights)
+            if key in SET_PRESET_MAP:
+                preset = PtzPresetData(
+                    SET_PRESET_MAP[key], f"MyCustomPreset{SET_PRESET_MAP[key]}"
+                )
+                await cam.async_set_ptz_preset(preset)
+                print(f"saved prest: {preset}")
 
-        if key == "c":
-            pprint(await cam.async_get_fixed_config())
+            if key in "x":
+                for preset in await cam.async_ptz_preset_info:
+                    await cam.async_clear_ptz_preset(preset)
+                    print(f"cleared preset: {preset}")
 
-        if key == "#":
-            pprint(f"Extra Streams: {await cam.async_max_extra_stream}")
+            if key == "r":
+                pprint(await cam.async_ptz_preset_info)
 
-        if key == "m":
-            try:
-                async for event in cam.async_listen_events():
-                    print(event)
-            except KeyboardInterrupt:
-                pass
+            if key == "space":
+                pm = await cam.async_get_privacy_mode_on()
+                await cam.async_set_privacy_mode_on(not pm)
+
+            if key == "l":
+                lights = await cam.async_lighting_config
+                pprint(lights)
+
+            if key == "c":
+                pprint(await cam.async_get_fixed_config())
+
+            if key == "#":
+                pprint(f"Extra Streams: {await cam.async_max_extra_stream}")
+
+            if key == "m":
+                try:
+                    async for event in cam.async_listen_events():
+                        print(event)
+                except KeyboardInterrupt:
+                    pass
+        except Exception as e:
+            print(e)
 
     listen_keyboard(on_press=on_press)
 

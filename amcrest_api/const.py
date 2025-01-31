@@ -21,3 +21,18 @@ class StreamType(IntEnum):
     MAIN = 0
     SUBSTREAM1 = 1
     SUBSTREAM2 = 2
+
+
+class StreamTypeName(StrEnum):
+    """Stream Type Names."""
+
+    MAIN = "Main"
+    SUBSTREAM1 = "Sub Stream 1"
+    SUBSTREAM2 = "Sub Stream 2"
+
+
+STREAM_TYPE_DICT = {
+    StreamType.MAIN: StreamTypeName.MAIN,
+    StreamType.SUBSTREAM1: StreamTypeName.SUBSTREAM1,
+    StreamType.SUBSTREAM2: StreamTypeName.SUBSTREAM2,
+}

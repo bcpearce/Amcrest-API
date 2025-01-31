@@ -7,8 +7,17 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "aioconsole"
+version = "0.8.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/c9/c57e979eea211b10a63783882a826f257713fa7c0d6c9a6eac851e674fb4/aioconsole-0.8.1.tar.gz", hash = "sha256:0535ce743ba468fb21a1ba43c9563032c779534d4ecd923a46dbd350ad91d234", size = 61085 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/ea/23e756ec1fea0c685149304dda954b3b3932d6d06afbf42a66a2e6dc2184/aioconsole-0.8.1-py3-none-any.whl", hash = "sha256:e1023685cde35dde909fbf00631ffb2ed1c67fe0b7058ebb0892afbde5f213e5", size = 43324 },
+]
+
+[[package]]
 name = "amcrest-api"
-version = "0.1.0a2"
+version = "0.1.0a3"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -17,6 +26,7 @@ dependencies = [
 
 [package.dev-dependencies]
 cli = [
+    { name = "aioconsole" },
     { name = "sshkeyboard" },
     { name = "typer" },
 ]
@@ -44,6 +54,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 cli = [
+    { name = "aioconsole", specifier = ">=0.8.1" },
     { name = "sshkeyboard", specifier = ">=2.3.1" },
     { name = "typer", specifier = ">=0.15.1" },
 ]

@@ -16,7 +16,7 @@ from amcrest_api.error import UnsupportedStreamSubtype
 
 from . import utils
 from .config import Config
-from .const import ApiEndpoints, StreamType
+from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
 from .ptz import (
     PtzAccuratePosition,
@@ -63,6 +63,11 @@ class Camera:
             config["software_version"] = await self.async_software_version
             config["ptz_capabilities"] = await self.async_ptz_capabilities
             config["max_extra_stream"] = await self.async_max_extra_stream
+            config["supported_streams"] = {
+                k: v
+                for k, v in STREAM_TYPE_DICT.items()
+                if k <= config["max_extra_stream"]
+            }
             for _, value in config["network"].items():
                 if isinstance(value, dict) and value.get("IPAddress") == self._host:
                     config["session_physical_address"] = value["PhysicalAddress"]
@@ -242,7 +247,51 @@ class Camera:
             for preset in utils.indexed_dict_to_list(response_content["presets"])
         ]
 
-    async def async_ptz_move_to_preset(self, preset_number: int, channel: int = 1):
+    async def async_set_ptz_preset(
+        self, preset: PtzPresetData, channel: int = 1
+    ) -> None:
+        """Asynchronously save the current position as a preset."""
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "start",
+                "code": "SetPreset",
+                "channel": channel,
+                "arg1": 0,
+                "arg2": preset.index,
+                "arg3": 0,
+            },
+        )
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "setPreset",
+                "channel": channel,
+                "arg1": preset.index,
+                "arg2": preset.name,
+            },
+        )
+
+    async def async_clear_ptz_preset(
+        self, preset: PtzPresetData | int, channel: int = 1
+    ) -> None:
+        """Asynchronously delete a preset."""
+        index = preset.index if isinstance(preset, PtzPresetData) else preset
+        await self._async_api_request(
+            ApiEndpoints.PTZ,
+            params={
+                "action": "start",
+                "code": "ClearPreset",
+                "channel": channel,
+                "arg1": 0,
+                "arg2": index,
+                "arg3": 0,
+            },
+        )
+
+    async def async_ptz_move_to_preset(
+        self, preset_number: int, channel: int = 1
+    ) -> None:
         """Asynchronously move to a preset."""
         return await self._async_api_request(
             ApiEndpoints.PTZ,
