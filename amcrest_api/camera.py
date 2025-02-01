@@ -9,8 +9,8 @@ from datetime import timedelta
 from ssl import SSLContext
 from typing import Any
 
-import yarl
 from httpx import AsyncClient, DigestAuth, Request, Response
+from yarl import URL
 
 from amcrest_api.error import UnsupportedStreamSubtype
 
@@ -74,9 +74,13 @@ class Camera:
             self._fixed_config = Config(**config)
         return self._fixed_config
 
+    @property
+    def url(self) -> URL:
+        return URL.build(scheme=self._scheme, host=self._host, port=self._port)
+
     async def async_get_rtsp_url(
         self, *, channel: int = 1, subtype: int = StreamType.MAIN
-    ) -> yarl.URL | None:
+    ) -> URL | None:
         """
         Returns the streaming URL including credentials.
         ***Warning*** this will be in plaintext instead of digest form.
@@ -97,7 +101,7 @@ class Camera:
         )["RTSP"]
         if rtsp_conf["Enable"] == "false":
             return None
-        return yarl.URL.build(
+        return URL.build(
             scheme="rtsp",
             user=self._username,
             password=self._password,
@@ -426,7 +430,7 @@ class Camera:
     def _create_async_client(self, **kwargs):
         return AsyncClient(
             auth=DigestAuth(self._username, self._password),
-            base_url=f"{self._scheme}://{self._host}:{self._port}",
+            base_url=str(self.url),
             verify=self._verify,
             **kwargs,
         )
