@@ -56,13 +56,15 @@ class Camera:
         """Read a number of properties that should be cached for the API session."""
         if self._fixed_config is None:
             config: dict[str, Any] = {}
-            config["serial_number"] = await self.async_serial_number
-            config["supported_events"] = await self.async_supported_events
+            config["device_type"] = await self.async_device_type
+            config["hardware_version"] = await self.async_hardware_version
             config["machine_name"] = await self.async_machine_name
-            config["network"] = (await self.async_network_config)["Network"]
-            config["software_version"] = await self.async_software_version
-            config["ptz_capabilities"] = await self.async_ptz_capabilities
             config["max_extra_stream"] = await self.async_max_extra_stream
+            config["network"] = (await self.async_network_config)["Network"]
+            config["ptz_capabilities"] = await self.async_ptz_capabilities
+            config["serial_number"] = await self.async_serial_number
+            config["software_version"] = await self.async_software_version
+            config["supported_events"] = await self.async_supported_events
             config["supported_streams"] = {
                 k: v
                 for k, v in STREAM_TYPE_DICT.items()
@@ -158,6 +160,24 @@ class Camera:
                 ApiEndpoints.MAGIC_BOX, params={"action": "getSerialNo"}
             )
         )["sn"]
+
+    @property
+    async def async_device_type(self):
+        """Get device type/model name."""
+        return (
+            await self._async_api_request(
+                ApiEndpoints.MAGIC_BOX, params={"action": "getDeviceType"}
+            )
+        )["type"]
+
+    @property
+    async def async_hardware_version(self):
+        """Get hardware version."""
+        return (
+            await self._async_api_request(
+                ApiEndpoints.MAGIC_BOX, params={"action": "getHardwareVersion"}
+            )
+        )["version"]
 
     @property
     async def async_max_extra_stream(self):
