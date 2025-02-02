@@ -94,12 +94,16 @@ async def test_get_ptz_capabilities(
     )
 
 
-async def test_get_storage_info(
-    camera: Camera, mock_camera_server: HTTPServer, snapshot
-) -> None:
+async def test_get_storage_info(camera: Camera, snapshot) -> None:
     """Test getting storage info."""
     storage_infos = await camera.async_storage_info
     assert len(storage_infos) == 1
     assert not storage_infos[0].cant_hot_plug
     assert storage_infos[0].total_bytes == 997703680
     assert storage_infos == snapshot
+
+
+async def test_get_video_image_control(camera: Camera, snapshot) -> None:
+    """Test getting video image control."""
+    video_image_control = await camera.async_video_image_control
+    assert video_image_control == snapshot

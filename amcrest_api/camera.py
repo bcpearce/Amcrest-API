@@ -18,6 +18,7 @@ from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
+from .imaging import VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
     PtzBasicMove,
@@ -399,6 +400,16 @@ class Camera:
                 params={
                     "action": "getDeviceAllInfo",
                 },
+            )
+        )
+
+    @property
+    async def async_video_image_control(self) -> list[VideoImageControl]:
+        """Get flip, mirror, and rotate settings."""
+        return VideoImageControl.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "VideoImageControl"},
             )
         )
 

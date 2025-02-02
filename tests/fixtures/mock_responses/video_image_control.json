@@ -1,0 +1,4 @@
+{
+  "content": "table.VideoImageControl[0].Flip=false\r\ntable.VideoImageControl[0].Freeze=false\r\ntable.VideoImageControl[0].Mirror=false\r\ntable.VideoImageControl[0].Rotate90=2\r\ntable.VideoImageControl[0].Stable=0\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=VideoImageControl"
+}
