@@ -9,8 +9,8 @@ from datetime import timedelta
 from ssl import SSLContext
 from typing import Any
 
-import yarl
 from httpx import AsyncClient, DigestAuth, Request, Response
+from yarl import URL
 
 from amcrest_api.error import UnsupportedStreamSubtype
 
@@ -26,6 +26,7 @@ from .ptz import (
     PtzRelativeMove,
     PtzStatusData,
 )
+from .storage import StorageDeviceInfo
 
 
 class Camera:
@@ -56,13 +57,15 @@ class Camera:
         """Read a number of properties that should be cached for the API session."""
         if self._fixed_config is None:
             config: dict[str, Any] = {}
-            config["serial_number"] = await self.async_serial_number
-            config["supported_events"] = await self.async_supported_events
+            config["device_type"] = await self.async_device_type
+            config["hardware_version"] = await self.async_hardware_version
             config["machine_name"] = await self.async_machine_name
-            config["network"] = (await self.async_network_config)["Network"]
-            config["software_version"] = await self.async_software_version
-            config["ptz_capabilities"] = await self.async_ptz_capabilities
             config["max_extra_stream"] = await self.async_max_extra_stream
+            config["network"] = (await self.async_network_config)["Network"]
+            config["ptz_capabilities"] = await self.async_ptz_capabilities
+            config["serial_number"] = await self.async_serial_number
+            config["software_version"] = await self.async_software_version
+            config["supported_events"] = await self.async_supported_events
             config["supported_streams"] = {
                 k: v
                 for k, v in STREAM_TYPE_DICT.items()
@@ -74,9 +77,13 @@ class Camera:
             self._fixed_config = Config(**config)
         return self._fixed_config
 
+    @property
+    def url(self) -> URL:
+        return URL.build(scheme=self._scheme, host=self._host, port=self._port)
+
     async def async_get_rtsp_url(
         self, *, channel: int = 1, subtype: int = StreamType.MAIN
-    ) -> yarl.URL | None:
+    ) -> URL | None:
         """
         Returns the streaming URL including credentials.
         ***Warning*** this will be in plaintext instead of digest form.
@@ -97,7 +104,7 @@ class Camera:
         )["RTSP"]
         if rtsp_conf["Enable"] == "false":
             return None
-        return yarl.URL.build(
+        return URL.build(
             scheme="rtsp",
             user=self._username,
             password=self._password,
@@ -154,6 +161,24 @@ class Camera:
                 ApiEndpoints.MAGIC_BOX, params={"action": "getSerialNo"}
             )
         )["sn"]
+
+    @property
+    async def async_device_type(self):
+        """Get device type/model name."""
+        return (
+            await self._async_api_request(
+                ApiEndpoints.MAGIC_BOX, params={"action": "getDeviceType"}
+            )
+        )["type"]
+
+    @property
+    async def async_hardware_version(self):
+        """Get hardware version."""
+        return (
+            await self._async_api_request(
+                ApiEndpoints.MAGIC_BOX, params={"action": "getHardwareVersion"}
+            )
+        )["version"]
 
     @property
     async def async_max_extra_stream(self):
@@ -365,6 +390,18 @@ class Camera:
             )
         )
 
+    @property
+    async def async_storage_info(self) -> list[StorageDeviceInfo]:
+        """Get storage device info."""
+        return StorageDeviceInfo.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.STORAGE_DEVICE,
+                params={
+                    "action": "getDeviceAllInfo",
+                },
+            )
+        )
+
     async def async_set_privacy_mode_on(self, on: bool) -> None:
         """Set privacy mode on or off."""
         await self._async_api_request(
@@ -426,7 +463,7 @@ class Camera:
     def _create_async_client(self, **kwargs):
         return AsyncClient(
             auth=DigestAuth(self._username, self._password),
-            base_url=f"{self._scheme}://{self._host}:{self._port}",
+            base_url=str(self.url),
             verify=self._verify,
             **kwargs,
         )

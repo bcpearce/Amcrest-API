@@ -1,0 +1,4 @@
+{
+  "content": "list.info[0].CantHotPlug=false\r\nlist.info[0].Detail[0].IsError=false\r\nlist.info[0].Detail[0].Path=/mnt/sd\r\nlist.info[0].Detail[0].TotalBytes=997703680.000000\r\nlist.info[0].Detail[0].Type=ReadWrite\r\nlist.info[0].Detail[0].UsedBytes=26353664.000000\r\nlist.info[0].HealthDataFlag=0\r\nlist.info[0].LifePercent=0.000000\r\nlist.info[0].LockState=0\r\nlist.info[0].Name=/dev/mmc0\r\nlist.info[0].Pointer=1\r\nlist.info[0].SDEncryptFlag=0\r\nlist.info[0].State=Success\r\n",
+  "raw_path": "/cgi-bin/storageDevice.cgi?action=getDeviceAllInfo"
+}

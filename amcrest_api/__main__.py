@@ -140,6 +140,9 @@ def main(
             if key == "c":
                 pprint(await cam.async_get_fixed_config())
 
+            if key == "s":
+                pprint(await cam.async_storage_info)
+
             if key == "#":
                 pprint(f"Extra Streams: {await cam.async_max_extra_stream}")
 

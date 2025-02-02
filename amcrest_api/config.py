@@ -13,6 +13,8 @@ from .ptz import PtzCapabilityData
 class Config:
     """A Config containing elements unlikely to change during the API Session."""
 
+    device_type: str
+    hardware_version: str
     machine_name: str
     max_extra_stream: StreamType
     network: dict[str, Any]
