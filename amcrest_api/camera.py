@@ -26,6 +26,7 @@ from .ptz import (
     PtzRelativeMove,
     PtzStatusData,
 )
+from .storage import StorageDeviceInfo
 
 
 class Camera:
@@ -386,6 +387,18 @@ class Camera:
         return PtzStatusData.create_from_response(
             await self._async_api_request(
                 ApiEndpoints.PTZ, params={"action": "getStatus", "channel": channel}
+            )
+        )
+
+    @property
+    async def async_storage_info(self) -> list[StorageDeviceInfo]:
+        """Get storage device info."""
+        return StorageDeviceInfo.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.STORAGE_DEVICE,
+                params={
+                    "action": "getDeviceAllInfo",
+                },
             )
         )
 

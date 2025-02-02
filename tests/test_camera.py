@@ -92,3 +92,14 @@ async def test_get_ptz_capabilities(
     mock_camera_server.assert_request_made(
         RequestMatcher(uri=ApiEndpoints.PTZ), count=1
     )
+
+
+async def test_get_storage_info(
+    camera: Camera, mock_camera_server: HTTPServer, snapshot
+) -> None:
+    """Test getting storage info."""
+    storage_infos = await camera.async_storage_info
+    assert len(storage_infos) == 1
+    assert not storage_infos[0].cant_hot_plug
+    assert storage_infos[0].total_bytes == 997703680
+    assert storage_infos == snapshot

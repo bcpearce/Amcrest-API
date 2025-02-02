@@ -13,6 +13,7 @@ class ApiEndpoints(StrEnum):
     PTZ = "/cgi-bin/ptz.cgi"
     REALTIME_STREAM = "/cam/realmonitor"
     SNAPSHOT = "/cgi-bin/snapshot.cgi"
+    STORAGE_DEVICE = "/cgi-bin/storageDevice.cgi"
 
 
 class StreamType(IntEnum):

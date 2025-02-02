@@ -1,6 +1,11 @@
 # name: test_get_ptz_capabilities
   PtzCapabilityData(pan=True, tilt=True, zoom=False, preset=True, tour=False, pan_min=1.0, pan_max=354.0, pan_speed_min=1, pan_speed_max=255, tilt_min=-4.0, tilt_max=79.0, tilt_speed_min=1, tilt_speed_max=1, zoom_min=1.0, zoom_max=1.0, preset_min=1, preset_max=25, tour_min=0, tour_max=0, supported_directions=[<Direction.DOWN: 'DOWN'>, <Direction.LEFT: 'LEFT'>, <Direction.RIGHT: 'RIGHT'>, <Direction.UP: 'UP'>])
 ---
+# name: test_get_storage_info
+  <class 'list'> [
+    StorageDeviceInfo(is_error=False, path='/mnt/sd', type='ReadWrite', cant_hot_plug=False, total_bytes=997703680, used_bytes=26353664, life_percent=0.0, state='Success', sd_encrypt_flag=0, health_data_flag=0, name='/dev/mmc0'),
+  ]
+---
 # name: test_lighting
   <class 'dict'> {
     'Lighting': <class 'dict'> {
