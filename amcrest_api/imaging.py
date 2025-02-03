@@ -15,7 +15,7 @@ class Rotate90Flag(IntFlag):
     COUNTERCLOCKWISE_90 = 2
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class VideoImageControl:
     flip: bool
     freeze: bool

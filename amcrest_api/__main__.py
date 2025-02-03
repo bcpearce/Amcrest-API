@@ -11,6 +11,7 @@ from sshkeyboard import listen_keyboard
 
 from . import version
 from .camera import Camera
+from .imaging import Rotate90Flag
 from .ptz import PtzPresetData, PtzRelativeMove
 
 
@@ -100,6 +101,53 @@ def main(
                 await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=-0.05))
             elif key == "right":
                 await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=0.05))
+
+            if key in ["pageup", "pagedown"]:
+                video_image_control = (await cam.async_video_image_control)[0]
+
+                if key == "pageup":
+                    if (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.CLOCKWISE_90
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.CLOCKWISE_90
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.flip = True
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and video_image_control.flip
+                    ):
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.COUNTERCLOCKWISE_90
+                    else:
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+
+                elif key == "pagedown":
+                    if (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.COUNTERCLOCKWISE_90
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.CLOCKWISE_90
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and video_image_control.flip
+                    ):
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.CLOCKWISE_90
+                    else:
+                        video_image_control.flip = True
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                await cam.async_set_video_image_control(video_image_control)
 
             SET_PRESET_MAP = {
                 "!": "1",

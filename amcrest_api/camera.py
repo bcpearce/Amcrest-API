@@ -413,11 +413,25 @@ class Camera:
             )
         )
 
-    async def async_set_privacy_mode_on(self, on: bool) -> None:
+    async def async_set_video_image_control(
+        self, video_image_control: VideoImageControl, channel: int = 1
+    ) -> None:
+        """Set image control settings."""
+        await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={
+                "action": "setConfig",
+                f"VideoImageControl[{channel - 1}].Flip": video_image_control.flip,
+                f"VideoImageControl[{channel - 1}].Mirror": video_image_control.mirror,
+                f"VideoImageControl[{channel - 1}].Rotate90": video_image_control.rotate_90,  # noqa: E501
+            },
+        )
+
+    async def async_set_privacy_mode_on(self, on: bool, channel: int = 1) -> None:
         """Set privacy mode on or off."""
         await self._async_api_request(
             ApiEndpoints.CONFIG_MANAGER,
-            params={"action": "setConfig", "LeLensMask[0].Enable": on},
+            params={"action": "setConfig", f"LeLensMask[{channel - 1}].Enable": on},
         )
 
     async def async_get_privacy_mode_on(self) -> bool:
