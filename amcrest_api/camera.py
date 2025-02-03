@@ -18,7 +18,7 @@ from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
-from .imaging import VideoImageControl
+from .imaging import ConfigNo, VideoDayNight, VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
     PtzBasicMove,
@@ -424,6 +424,35 @@ class Camera:
                 f"VideoImageControl[{channel - 1}].Flip": video_image_control.flip,
                 f"VideoImageControl[{channel - 1}].Mirror": video_image_control.mirror,
                 f"VideoImageControl[{channel - 1}].Rotate90": video_image_control.rotate_90,  # noqa: E501
+            },
+        )
+
+    async def async_get_video_in_day_night(
+        self,
+    ) -> list[list[VideoDayNight]]:
+        """Video input day/night settings."""
+        return VideoDayNight.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "VideoInDayNight"},
+            )
+        )
+
+    async def async_set_video_in_day_night(
+        self,
+        video_day_night: VideoDayNight,
+        config_no: ConfigNo,
+        channel: int = 1,
+    ) -> None:
+        """Set video input day/night settings for a config and channel."""
+        await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={
+                "action": "setConfig",
+                f"VideoInDayNight[{channel - 1}][{config_no}].Type": video_day_night.type,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Mode": video_day_night.mode,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Sensitivity": video_day_night.sensitivity,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Delay": video_day_night.delay_seconds,  # noqa: E501
             },
         )
 

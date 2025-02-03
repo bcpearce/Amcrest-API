@@ -1,0 +1,4 @@
+{
+  "content": "table.VideoInDayNight[0][0].Delay=6\r\ntable.VideoInDayNight[0][0].Mode=Brightness\r\ntable.VideoInDayNight[0][0].Sensitivity=2\r\ntable.VideoInDayNight[0][0].Type=Mechanism\r\ntable.VideoInDayNight[0][1].Delay=6\r\ntable.VideoInDayNight[0][1].Mode=Brightness\r\ntable.VideoInDayNight[0][1].Sensitivity=2\r\ntable.VideoInDayNight[0][1].Type=Mechanism\r\ntable.VideoInDayNight[0][2].Delay=6\r\ntable.VideoInDayNight[0][2].Mode=Brightness\r\ntable.VideoInDayNight[0][2].Sensitivity=2\r\ntable.VideoInDayNight[0][2].Type=Mechanism\r\n",
+  "raw_path": "/cgi-bin/configManager.cgi?action=getConfig&name=VideoInDayNight"
+}

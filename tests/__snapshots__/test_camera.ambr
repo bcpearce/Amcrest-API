@@ -12,6 +12,15 @@
     VideoImageControl(flip=False, freeze=False, mirror=False, rotate_90=<Rotate90Flag.COUNTERCLOCKWISE_90: 2>, stable=0),
   ])
 # ---
+# name: test_get_video_in_day_night
+  list([
+    list([
+      VideoDayNight(delay_seconds=6, mode=<VideoMode.BRIGHTNESS: 'Brightness'>, sensitivity=<VideoSensitivity.MEDIUM: 2>, type=<VideoDayNightType.MECHANISM: 'Mechanism'>),
+      VideoDayNight(delay_seconds=6, mode=<VideoMode.BRIGHTNESS: 'Brightness'>, sensitivity=<VideoSensitivity.MEDIUM: 2>, type=<VideoDayNightType.MECHANISM: 'Mechanism'>),
+      VideoDayNight(delay_seconds=6, mode=<VideoMode.BRIGHTNESS: 'Brightness'>, sensitivity=<VideoSensitivity.MEDIUM: 2>, type=<VideoDayNightType.MECHANISM: 'Mechanism'>),
+    ]),
+  ])
+# ---
 # name: test_lighting
   dict({
     'Lighting': dict({

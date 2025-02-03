@@ -107,3 +107,9 @@ async def test_get_video_image_control(camera: Camera, snapshot) -> None:
     """Test getting video image control."""
     video_image_control = await camera.async_video_image_control
     assert video_image_control == snapshot
+
+
+async def test_get_video_in_day_night(camera: Camera, snapshot) -> None:
+    """Test getting video in day night."""
+    video_in_day_night = await camera.async_get_video_in_day_night()
+    assert video_in_day_night == snapshot

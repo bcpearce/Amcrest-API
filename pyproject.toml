@@ -56,6 +56,7 @@ quote-style = "double"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 addopts = "--cov=amcrest_api --cov-report=xml --junitxml test_results.xml"
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 omit = ["amcrest_api/__main__.py"]
