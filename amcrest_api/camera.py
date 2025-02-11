@@ -18,7 +18,7 @@ from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
-from .imaging import ConfigNo, VideoDayNight, VideoImageControl
+from .imaging import ConfigNo, Lighting, VideoDayNight, VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
     PtzBasicMove,
@@ -80,6 +80,7 @@ class Camera:
 
     @property
     def url(self) -> URL:
+        """Provide the URL for accessing the web interface."""
         return URL.build(scheme=self._scheme, host=self._host, port=self._port)
 
     async def async_get_rtsp_url(
@@ -232,12 +233,40 @@ class Camera:
         )
 
     @property
-    async def async_lighting_config(self):
+    async def async_lighting_config(self) -> list[list[list[Lighting]]]:
         """Get lighting config."""
-        return await self._async_api_request(
-            ApiEndpoints.CONFIG_MANAGER,
-            params={"action": "getConfig", "name": "Lighting"},
+        return Lighting.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "Lighting_V2"},
+            )
         )
+
+    async def async_set_lighting_config(
+        self, config_no, light: Lighting, index: int = 0, channel: int = 1
+    ) -> None:
+        """Set lighting config."""
+        params: dict[str, Any] = {"action": "setConfig"}
+        if light.middle_light:
+            params[
+                f"Lighting_V2[{channel - 1}][{config_no}][{index}].MiddleLight[0].Light"
+            ] = light.middle_light.light
+            params[
+                f"Lighting_V2[{channel - 1}][{config_no}][{index}].MiddleLight[0].Angle"
+            ] = light.middle_light.angle
+        if light.correction:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Correction"] = (
+                light.correction
+            )
+        if light.mode:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Mode"] = (
+                light.mode
+            )
+        if light.sensitivity:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Sensitive"] = (
+                light.sensitivity
+            )
+        await self._async_api_request(ApiEndpoints.CONFIG_MANAGER, params=params)
 
     @property
     async def async_encode_capability(self) -> Awaitable[dict[str, Any]]:

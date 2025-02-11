@@ -215,7 +215,7 @@ def main(
                 except KeyboardInterrupt:
                     pass
         except Exception as e:
-            print(e)
+            print(type(e), e)
 
     listen_keyboard(on_press=on_press, lower=False)
 

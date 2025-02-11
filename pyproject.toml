@@ -1,6 +1,6 @@
 [project]
 name = "amcrest_api"
-version = "0.1.0a5"
+version = "0.1.0"
 authors = [
   {name="Benjamin Pearce", email="amcrest_api@bcpearce.com"}
 ]
@@ -19,6 +19,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 test = [
+    "coverage-badge>=1.1.2",
     "pytest>=8.3.4",
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=5.0.0",
