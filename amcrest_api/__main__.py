@@ -11,6 +11,7 @@ from sshkeyboard import listen_keyboard
 
 from . import version
 from .camera import Camera
+from .imaging import ConfigNo, Rotate90Flag, VideoMode
 from .ptz import PtzPresetData, PtzRelativeMove
 
 
@@ -101,6 +102,53 @@ def main(
             elif key == "right":
                 await cam.async_ptz_move_relative(PtzRelativeMove(horizontal=0.05))
 
+            if key in ["pageup", "pagedown"]:
+                video_image_control = (await cam.async_video_image_control)[0]
+
+                if key == "pageup":
+                    if (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.CLOCKWISE_90
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.CLOCKWISE_90
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.flip = True
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and video_image_control.flip
+                    ):
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.COUNTERCLOCKWISE_90
+                    else:
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+
+                elif key == "pagedown":
+                    if (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.COUNTERCLOCKWISE_90
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.CLOCKWISE_90
+                        and not video_image_control.flip
+                    ):
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                    elif (
+                        video_image_control.rotate_90 == Rotate90Flag.NO_ROTATE
+                        and video_image_control.flip
+                    ):
+                        video_image_control.flip = False
+                        video_image_control.rotate_90 = Rotate90Flag.CLOCKWISE_90
+                    else:
+                        video_image_control.flip = True
+                        video_image_control.rotate_90 = Rotate90Flag.NO_ROTATE
+                await cam.async_set_video_image_control(video_image_control)
+
             SET_PRESET_MAP = {
                 "!": "1",
                 "@": "2",
@@ -133,6 +181,20 @@ def main(
                 pm = await cam.async_get_privacy_mode_on()
                 await cam.async_set_privacy_mode_on(not pm)
 
+            if key == "d":
+                pprint(await cam.async_get_video_in_day_night())
+
+            if key == "D":
+                config = (await cam.async_get_video_in_day_night())[0][ConfigNo.NORMAL]
+                if config.mode == VideoMode.BRIGHTNESS:
+                    config.mode = VideoMode.BLACK_WHITE
+                elif config.mode == VideoMode.BLACK_WHITE:
+                    config.mode = VideoMode.COLOR
+                elif config.mode == VideoMode.COLOR:
+                    config.mode = VideoMode.BRIGHTNESS
+                await cam.async_set_video_in_day_night(config, ConfigNo.NORMAL)
+                print(f"Switched to mode: {config.mode}")
+
             if key == "l":
                 lights = await cam.async_lighting_config
                 pprint(lights)
@@ -153,9 +215,9 @@ def main(
                 except KeyboardInterrupt:
                     pass
         except Exception as e:
-            print(e)
+            print(type(e), e)
 
-    listen_keyboard(on_press=on_press)
+    listen_keyboard(on_press=on_press, lower=False)
 
 
 if __name__ == "__main__":

@@ -18,6 +18,7 @@ from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
 from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
+from .imaging import ConfigNo, Lighting, VideoDayNight, VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
     PtzBasicMove,
@@ -79,6 +80,7 @@ class Camera:
 
     @property
     def url(self) -> URL:
+        """Provide the URL for accessing the web interface."""
         return URL.build(scheme=self._scheme, host=self._host, port=self._port)
 
     async def async_get_rtsp_url(
@@ -231,12 +233,40 @@ class Camera:
         )
 
     @property
-    async def async_lighting_config(self):
+    async def async_lighting_config(self) -> list[list[list[Lighting]]]:
         """Get lighting config."""
-        return await self._async_api_request(
-            ApiEndpoints.CONFIG_MANAGER,
-            params={"action": "getConfig", "name": "Lighting"},
+        return Lighting.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "Lighting_V2"},
+            )
         )
+
+    async def async_set_lighting_config(
+        self, config_no, light: Lighting, index: int = 0, channel: int = 1
+    ) -> None:
+        """Set lighting config."""
+        params: dict[str, Any] = {"action": "setConfig"}
+        if light.middle_light:
+            params[
+                f"Lighting_V2[{channel - 1}][{config_no}][{index}].MiddleLight[0].Light"
+            ] = light.middle_light.light
+            params[
+                f"Lighting_V2[{channel - 1}][{config_no}][{index}].MiddleLight[0].Angle"
+            ] = light.middle_light.angle
+        if light.correction:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Correction"] = (
+                light.correction
+            )
+        if light.mode:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Mode"] = (
+                light.mode
+            )
+        if light.sensitivity:
+            params[f"Lighting_V2[{channel - 1}][{config_no}][{index}].Sensitive"] = (
+                light.sensitivity
+            )
+        await self._async_api_request(ApiEndpoints.CONFIG_MANAGER, params=params)
 
     @property
     async def async_encode_capability(self) -> Awaitable[dict[str, Any]]:
@@ -402,11 +432,64 @@ class Camera:
             )
         )
 
-    async def async_set_privacy_mode_on(self, on: bool) -> None:
+    @property
+    async def async_video_image_control(self) -> list[VideoImageControl]:
+        """Get flip, mirror, and rotate settings."""
+        return VideoImageControl.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "VideoImageControl"},
+            )
+        )
+
+    async def async_set_video_image_control(
+        self, video_image_control: VideoImageControl, channel: int = 1
+    ) -> None:
+        """Set image control settings."""
+        await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={
+                "action": "setConfig",
+                f"VideoImageControl[{channel - 1}].Flip": video_image_control.flip,
+                f"VideoImageControl[{channel - 1}].Mirror": video_image_control.mirror,
+                f"VideoImageControl[{channel - 1}].Rotate90": video_image_control.rotate_90,  # noqa: E501
+            },
+        )
+
+    async def async_get_video_in_day_night(
+        self,
+    ) -> list[list[VideoDayNight]]:
+        """Video input day/night settings."""
+        return VideoDayNight.create_from_response(
+            await self._async_api_request(
+                ApiEndpoints.CONFIG_MANAGER,
+                params={"action": "getConfig", "name": "VideoInDayNight"},
+            )
+        )
+
+    async def async_set_video_in_day_night(
+        self,
+        video_day_night: VideoDayNight,
+        config_no: ConfigNo,
+        channel: int = 1,
+    ) -> None:
+        """Set video input day/night settings for a config and channel."""
+        await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={
+                "action": "setConfig",
+                f"VideoInDayNight[{channel - 1}][{config_no}].Type": video_day_night.type,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Mode": video_day_night.mode,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Sensitivity": video_day_night.sensitivity,  # noqa: E501
+                f"VideoInDayNight[{channel - 1}][{config_no}].Delay": video_day_night.delay_seconds,  # noqa: E501
+            },
+        )
+
+    async def async_set_privacy_mode_on(self, on: bool, channel: int = 1) -> None:
         """Set privacy mode on or off."""
         await self._async_api_request(
             ApiEndpoints.CONFIG_MANAGER,
-            params={"action": "setConfig", "LeLensMask[0].Enable": on},
+            params={"action": "setConfig", f"LeLensMask[{channel - 1}].Enable": on},
         )
 
     async def async_get_privacy_mode_on(self) -> bool:

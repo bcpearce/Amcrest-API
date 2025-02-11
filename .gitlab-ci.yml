@@ -6,25 +6,30 @@ stages:
 
 variables:
   PYTHON_VERSION: 3.13
-  UV_VERSION: 0.5.21
-  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
-  VENV_DIR: $CI_PROJECT_DIR/.venv
+  UV_VERSION: 0.5.22
+  BASE_LAYER: bookworm
   PRE_COMMIT_HOME: $CI_PROJECT_DIR/.cache/pre-commit
+  UV_CACHE_DIR: $CI_PROJECT_DIR/.cache/uv
 
 default:
-  image: python:$PYTHON_VERSION
+  image: ghcr.io/astral-sh/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
   cache:
-    paths:
-      - .cache/pip
-      - .venv
-      - .cache/pre-commit
-
+    - key:
+        files:
+        - uv.lock
+      paths:
+      - $UV_CACHE_DIR
+    - key:
+        files:
+        - .pre-commit-config.yaml
+      paths:
+      - $PRE_COMMIT_HOME
   before_script:
-    - python --version ; pip --version
-    - pip install --upgrade pip
-    - pip install uv==$UV_VERSION --upgrade
-    - uv sync --all-groups
+    - python --version ; pip --version ; uv --version
+    - uv sync --all-groups --refresh-package amcrest_api
     - source .venv/bin/activate
+  after_script:
+    - uv cache prune --ci
 
 pre-commit:
   stage: lint
