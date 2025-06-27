@@ -1,4 +1,4 @@
-name: Run tests
+name: Run Tests
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: "Install the project"
-        run: uv sync --locked --all-extras --dev --test
+        run: uv sync --locked --all-extras --dev
       - name: "Run tests"
         run: uv run pytest tests
       - name: Test Summary

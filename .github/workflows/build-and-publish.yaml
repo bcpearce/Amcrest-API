@@ -1,10 +1,11 @@
+name: Build and Publish
+
 on:
   release:
     types: [released]
 
 jobs:
   build-and-publish:
-    name: "Build and Publish"
     runs-on: "ubuntu-latest"
     steps:
     - uses: actions/checkout@v4
@@ -13,4 +14,4 @@ jobs:
     - name: Build the project
       run: uv build
     - name: Publish the project
-      run: uv publish --token ${{ PYPI_PUBLISH_TOKEN }}
+      run: uv publish --token ${{ secrets.PYPI_PUBLISH_TOKEN }}
