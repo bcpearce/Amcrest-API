@@ -10,7 +10,7 @@ jobs:
     permissions:
       id-token: write
     environment:
-      name: pypi
+      name: release
       url: https://pypi.org/p/amcrest_api
     steps:
     - uses: actions/checkout@v4
