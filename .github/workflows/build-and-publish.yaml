@@ -9,6 +9,9 @@ jobs:
     runs-on: "ubuntu-latest"
     permissions:
       id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/amcrest_api
     steps:
     - uses: actions/checkout@v4
     - name: Install uv
@@ -16,4 +19,4 @@ jobs:
     - name: Build the project
       run: uv build
     - name: Publish through Trusted Publisher
-      uses: pypa/gh-action-pypi-publish@3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f
+      uses: pypa/gh-action-pypi-publish@release/v1
