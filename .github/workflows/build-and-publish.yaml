@@ -1,0 +1,16 @@
+on:
+  release:
+    types: [released]
+
+jobs:
+  build-and-publish:
+    name: "Build and Publish"
+    runs-on: "ubuntu-latest"
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+    - name: Build the project
+      run: uv build
+    - name: Publish the project
+      run: uv publish --token ${{ PYPI_PUBLISH_TOKEN }}

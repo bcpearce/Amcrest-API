@@ -11,23 +11,23 @@ repos:
     - id: pretty-format-json
       args: [ --autofix ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.1
+    rev: v0.12.1
     hooks:
     - id: ruff
       args: [ --fix ]
     - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.14.1'  # Use the sha / tag you want to point at
+    rev: 'v1.16.1'  # Use the sha / tag you want to point at
     hooks:
     -   id: mypy
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+    rev: v2.4.1
     hooks:
     - id: codespell
       exclude: "^tests/fixtures/mock_responses|uv.lock|requirements.txt"
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.5.21
+    rev: 0.7.15
     hooks:
       - id: uv-lock
       - id: uv-export
