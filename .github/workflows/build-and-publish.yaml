@@ -7,11 +7,13 @@ on:
 jobs:
   build-and-publish:
     runs-on: "ubuntu-latest"
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v4
     - name: Install uv
       uses: astral-sh/setup-uv@v5
     - name: Build the project
       run: uv build
-    - name: Publish the project
-      run: uv publish --token ${{ secrets.PYPI_PUBLISH_TOKEN }}
+    - name: Publish through Trusted Publisher
+      uses: pypa/gh-action-pypi-publish@3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f
