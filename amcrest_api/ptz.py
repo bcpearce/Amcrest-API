@@ -180,7 +180,7 @@ class PtzRelativeMove:
         return self._caps
 
     @caps.setter
-    def caps(self, value: PtzCapabilityData):
+    def caps(self, value: PtzCapabilityData | None):
         self._caps = value
 
     @property
