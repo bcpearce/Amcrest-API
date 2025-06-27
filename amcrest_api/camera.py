@@ -5,7 +5,7 @@ from collections.abc import (  # pylint: disable=import-error
     AsyncGenerator,
     Awaitable,
 )
-from datetime import timedelta
+from datetime import datetime, timedelta
 from ssl import SSLContext
 from typing import Any
 
@@ -531,6 +531,26 @@ class Camera:
             ApiEndpoints.SNAPSHOT, params={"channel": channel, "type": subtype}
         )
         return response
+
+    async def async_get_current_time(self) -> datetime:
+        """Get the current time from the camera."""
+        response = await self._async_api_request(
+            ApiEndpoints.GLOBAL, params={"action": "getCurrentTime"}
+        )
+        return datetime.strptime(response["result"], "%Y-%m-%d %H:%M:%S")
+
+    async def async_set_current_time(self, set_time: datetime | None = None) -> None:
+        """
+        Set the current time for the camera.
+        If set_time is not specified, use current time from system.
+        """
+        if set_time is None:
+            set_time = datetime.now()
+        set_time_str: str = set_time.strftime("%Y-%m-%d %H:%M:%S")
+        await self._async_api_request(
+            ApiEndpoints.GLOBAL,
+            params={"action": "setCurrentTime", "time": set_time_str},
+        )
 
     async def aclose_client(self) -> None:
         """

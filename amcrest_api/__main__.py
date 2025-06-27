@@ -86,6 +86,7 @@ def main(
 
     async def print_config(cam: Camera):
         pprint(await cam.async_get_fixed_config())
+        pprint(await cam.async_get_current_time())
 
     asyncio.run(print_config(cam))
 
