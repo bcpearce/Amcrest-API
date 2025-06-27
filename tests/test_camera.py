@@ -1,5 +1,6 @@
 """Tests the camera"""
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 import pytest
@@ -113,3 +114,9 @@ async def test_get_video_in_day_night(camera: Camera, snapshot) -> None:
     """Test getting video in day night."""
     video_in_day_night = await camera.async_get_video_in_day_night()
     assert video_in_day_night == snapshot
+
+
+async def test_get_current_time(camera: Camera) -> None:
+    """Test getting current time."""
+    current_time = await camera.async_get_current_time()
+    assert current_time == datetime(2011, 7, 3, 21, 2, 32)

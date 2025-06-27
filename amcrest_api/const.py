@@ -9,6 +9,7 @@ class ApiEndpoints(StrEnum):
     CONFIG_MANAGER = "/cgi-bin/configManager.cgi"
     ENCODE = "/cgi-bin/encode.cgi"
     EVENT_MANAGER = "/cgi-bin/eventManager.cgi"
+    GLOBAL = "/cgi-bin/global.cgi"
     MAGIC_BOX = "/cgi-bin/magicBox.cgi"
     PTZ = "/cgi-bin/ptz.cgi"
     REALTIME_STREAM = "/cam/realmonitor"
