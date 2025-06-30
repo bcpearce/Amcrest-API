@@ -27,7 +27,7 @@ repos:
       exclude: "^tests/fixtures/mock_responses|uv.lock|requirements.txt"
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.7.15
+    rev: 0.7.17
     hooks:
       - id: uv-lock
       - id: uv-export
