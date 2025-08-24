@@ -95,6 +95,23 @@ async def test_get_ptz_capabilities(
     )
 
 
+async def test_get_storage_info_names(camera: Camera) -> None:
+    """Test getting storage info names."""
+    storage_info_names = await camera.async_storage_list
+    assert len(storage_info_names) == 3
+    assert "/dev/sda0" in storage_info_names
+    assert "/dev/sda1" in storage_info_names
+    assert "/dev/mmc0" in storage_info_names
+
+
+async def test_get_storage_info_names_no_storage(camera_no_storage: Camera) -> None:
+    """Test getting storage info names."""
+    storage_info_names = await camera_no_storage.async_storage_list
+    assert len(storage_info_names) == 0
+    storage_infos = await camera_no_storage.async_storage_info
+    assert len(storage_infos) == 0
+
+
 async def test_get_storage_info(camera: Camera, snapshot) -> None:
     """Test getting storage info."""
     storage_infos = await camera.async_storage_info

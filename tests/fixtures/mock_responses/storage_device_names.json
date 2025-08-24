@@ -1,0 +1,4 @@
+{
+  "content": "list[0]=/dev/sda0\r\nlist[1]=/dev/sda1\r\nlist[2]=/dev/mmc0\r\n",
+  "raw_path": "/cgi-bin/storageDevice.cgi?action=factory.getCollect"
+}
