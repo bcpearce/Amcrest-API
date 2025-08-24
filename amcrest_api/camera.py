@@ -421,16 +421,26 @@ class Camera:
         )
 
     @property
+    async def async_storage_list(self) -> list[str]:
+        """Get list of storage device paths."""
+        res = await self._async_api_request(
+            ApiEndpoints.STORAGE_DEVICE, params={"action": "factory.getCollect"}
+        )
+        return utils.indexed_dict_to_list(res.get("list", {}))
+
+    @property
     async def async_storage_info(self) -> list[StorageDeviceInfo]:
         """Get storage device info."""
-        return StorageDeviceInfo.create_from_response(
-            await self._async_api_request(
-                ApiEndpoints.STORAGE_DEVICE,
-                params={
-                    "action": "getDeviceAllInfo",
-                },
+        if len(await self.async_storage_list) > 0:
+            return StorageDeviceInfo.create_from_response(
+                await self._async_api_request(
+                    ApiEndpoints.STORAGE_DEVICE,
+                    params={
+                        "action": "getDeviceAllInfo",
+                    },
+                )
             )
-        )
+        return list()
 
     @property
     async def async_video_image_control(self) -> list[VideoImageControl]:
