@@ -297,11 +297,11 @@ class Camera:
             ApiEndpoints.PTZ,
             params={"action": "getPresets", "channel": channel},
         )
-        if len(response_content) == 0:
-            return list()
         return [
             PtzPresetData(index=preset["Index"], name=preset["Name"])
-            for preset in utils.indexed_dict_to_list(response_content["presets"])
+            for preset in utils.indexed_dict_to_list(
+                response_content.get("presets", dict())
+            )
         ]
 
     async def async_set_ptz_preset(
