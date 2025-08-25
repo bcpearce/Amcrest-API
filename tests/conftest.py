@@ -82,6 +82,23 @@ def mock_camera_server_no_storage_fixture(httpserver: HTTPServer) -> HTTPServer:
     return httpserver
 
 
+@pytest.fixture(name="mock_camera_server_no_ptz_presets")
+def mock_camera_server_no_ptz_presets_fixture(httpserver: HTTPServer) -> HTTPServer:
+    """Mock camera server with no storage devices."""
+
+    empty_storage_path = Path(
+        "tests/fixtures/mock_responses_alt/ptz_config_presets_empty.json"
+    )
+    _load_fixture(empty_storage_path, httpserver, handlerType=HandlerType.ORDERED)
+
+    fixture_path = Path("tests/fixtures/mock_responses")
+    for path in fixture_path.iterdir():
+        _load_fixture(path, httpserver)
+        _load_fixture(path, httpserver)
+
+    return httpserver
+
+
 @pytest.fixture
 async def camera(mock_camera_server: HTTPServer) -> AsyncGenerator[Camera]:
     """Fixture which communicates with mock camera server."""
@@ -105,6 +122,21 @@ async def camera_no_storage(
         "testuser",
         "testpassword",
         port=mock_camera_server_no_storage.port,
+        verify=False,
+    ) as cam:
+        yield cam
+
+
+@pytest.fixture
+async def camera_no_ptz_presets(
+    mock_camera_server_no_ptz_presets: HTTPServer,
+) -> AsyncGenerator[Camera]:
+    """Fixture which communicates with mock camera server and has no PTZ presets."""
+    async with Camera(
+        mock_camera_server_no_ptz_presets.host,
+        "testuser",
+        "testpassword",
+        port=mock_camera_server_no_ptz_presets.port,
         verify=False,
     ) as cam:
         yield cam
