@@ -94,6 +94,7 @@ def mock_camera_server_no_ptz_presets_fixture(httpserver: HTTPServer) -> HTTPSer
     fixture_path = Path("tests/fixtures/mock_responses")
     for path in fixture_path.iterdir():
         _load_fixture(path, httpserver)
+        _load_fixture(path, httpserver)
 
     return httpserver
 
