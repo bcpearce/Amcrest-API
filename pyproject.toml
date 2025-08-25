@@ -1,6 +1,6 @@
 [project]
 name = "amcrest_api"
-version = "0.1.2"
+version = "0.1.3"
 authors = [
   {name="Benjamin Pearce", email="amcrest_api@bcpearce.com"}
 ]
