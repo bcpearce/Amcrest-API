@@ -51,6 +51,15 @@ async def test_read_ptz_config_empty_presets(camera_no_ptz_presets: Camera) -> N
     assert len(presets) == 0
 
 
+async def test_read_ptz_config_no_caps(camera_no_ptz_caps: Camera) -> None:
+    """Test get PTZ config when no Capabilities."""
+
+    caps = await camera_no_ptz_caps.async_ptz_capabilities
+    assert not caps.pan
+    assert not caps.tilt
+    assert not caps.zoom
+
+
 async def test_get_rtsp_url(camera: Camera) -> None:
     """Terst getting the RTSP URL"""
     url = yarl.URL(await camera.async_get_rtsp_url())

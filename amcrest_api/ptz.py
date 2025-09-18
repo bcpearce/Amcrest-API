@@ -68,13 +68,16 @@ class PtzCapabilityData:
         caps: dict[str, Any] = response["caps"]
 
         def check_true(key: str) -> bool:
-            return str(caps[key]).lower() == "true"
+            if (cap_str := caps.get(key)) is not None:
+                return cap_str.lower() == "true"
+            return False
 
         ret = PtzCapabilityData(
             pan=check_true("Pan"),
             tilt=check_true("Tile"),  # the key is a typo in the API
             zoom=check_true("Zoom"),
             preset=check_true("Preset"),
+            tour=check_true("Tour"),
         )
         if ret.pan:
             ret.pan_min = float(caps["PtzMotionRange"]["HorizontalAngle"][0])
