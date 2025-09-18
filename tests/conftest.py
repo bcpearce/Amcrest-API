@@ -94,6 +94,21 @@ def mock_camera_server_no_ptz_presets_fixture(httpserver: HTTPServer) -> HTTPSer
     fixture_path = Path("tests/fixtures/mock_responses")
     for path in fixture_path.iterdir():
         _load_fixture(path, httpserver)
+
+    return httpserver
+
+
+@pytest.fixture(name="mock_camera_server_no_ptz_caps")
+def mock_camera_server_no_ptz_caps_fixture(httpserver: HTTPServer) -> HTTPServer:
+    """Mock camera server with no PTZ caps."""
+
+    empty_caps_path = Path(
+        "tests/fixtures/mock_responses_alt/ptz_capabilities_no_PanTiltZoom.json"
+    )
+    _load_fixture(empty_caps_path, httpserver, handlerType=HandlerType.ORDERED)
+
+    fixture_path = Path("tests/fixtures/mock_responses")
+    for path in fixture_path.iterdir():
         _load_fixture(path, httpserver)
 
     return httpserver
@@ -137,6 +152,21 @@ async def camera_no_ptz_presets(
         "testuser",
         "testpassword",
         port=mock_camera_server_no_ptz_presets.port,
+        verify=False,
+    ) as cam:
+        yield cam
+
+
+@pytest.fixture
+async def camera_no_ptz_caps(
+    mock_camera_server_no_ptz_caps: HTTPServer,
+) -> AsyncGenerator[Camera]:
+    """Fixture which communicates with mock camera server and has no PTZ presets."""
+    async with Camera(
+        mock_camera_server_no_ptz_caps.host,
+        "testuser",
+        "testpassword",
+        port=mock_camera_server_no_ptz_caps.port,
         verify=False,
     ) as cam:
         yield cam
