@@ -58,6 +58,7 @@ async def test_read_ptz_config_no_caps(camera_no_ptz_caps: Camera) -> None:
     assert not caps.pan
     assert not caps.tilt
     assert not caps.zoom
+    assert not caps.tour
 
 
 async def test_get_rtsp_url(camera: Camera) -> None:
