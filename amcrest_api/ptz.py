@@ -102,11 +102,13 @@ class PtzCapabilityData:
         if ret.tour:
             ret.tour_min = int(caps["TourMin"])
             ret.tour_max = int(caps["TourMax"])
-        ret.supported_directions = sorted(
-            list[Direction](
-                ALL_DIRECTIONS ^ set[Direction](caps["UnSupportDirections"].values())  # type: ignore
+        if ret.pan or ret.tilt:
+            ret.supported_directions = sorted(
+                list[Direction](
+                    ALL_DIRECTIONS
+                    ^ set[Direction](caps.get("UnSupportDirections", dict()).values())  # type: ignore
+                )
             )
-        )
         return ret
 
 
