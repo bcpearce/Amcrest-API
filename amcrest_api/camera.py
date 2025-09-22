@@ -17,7 +17,7 @@ from amcrest_api.error import UnsupportedStreamSubtype
 from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
-from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
+from .event import EventBase, EventMessageData, parse_event_message
 from .imaging import ConfigNo, Lighting, VideoDayNight, VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
@@ -120,7 +120,7 @@ class Camera:
         self,
         *,
         heartbeat_seconds: int = 10,
-        filter_events: list[EventMessageType] | None = None,
+        filter_events: list[str] | None = None,
     ) -> AsyncGenerator[EventBase | None]:
         """
         Asynchronously listen to events.
@@ -276,16 +276,12 @@ class Camera:
         )
 
     @property
-    async def async_supported_events(self) -> list[EventMessageType]:
+    async def async_supported_events(self) -> list[str]:
         """Get a list of supported events."""
         response_content = await self._async_api_request(
             ApiEndpoints.EVENT_MANAGER, params={"action": "getExposureEvents"}
         )
-        return list(
-            map(
-                EventMessageType, utils.indexed_dict_to_list(response_content["events"])
-            )
-        )
+        return utils.indexed_dict_to_list(response_content["events"])
 
     @property
     async def async_ptz_preset_info(
