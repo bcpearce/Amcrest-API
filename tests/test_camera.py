@@ -153,3 +153,9 @@ async def test_get_current_time(camera: Camera) -> None:
     """Test getting current time."""
     current_time = await camera.async_get_current_time()
     assert current_time == datetime(2011, 7, 3, 21, 2, 32)
+
+
+async def test_camera_without_privacy_mode(camera_no_privacy_mode: Camera) -> None:
+    """Test camera without privacy mode."""
+    config = await camera_no_privacy_mode.async_get_fixed_config()
+    assert config.privacy_mode_available is False

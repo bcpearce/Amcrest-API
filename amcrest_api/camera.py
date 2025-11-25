@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from ssl import SSLContext
 from typing import Any
 
-from httpx import AsyncClient, DigestAuth, Request, Response
+from httpx import AsyncClient, DigestAuth, HTTPStatusError, Request, Response
 from yarl import URL
 
 from amcrest_api.error import UnsupportedStreamSubtype
@@ -72,6 +72,8 @@ class Camera:
                 for k, v in STREAM_TYPE_DICT.items()
                 if k <= config["max_extra_stream"]
             }
+            config["privacy_mode_available"] = await self.async_privacy_mode_available
+
             for _, value in config["network"].items():
                 if isinstance(value, dict) and value.get("IPAddress") == self._host:
                     config["session_physical_address"] = value["PhysicalAddress"]
@@ -492,6 +494,15 @@ class Camera:
                 f"VideoInDayNight[{channel - 1}][{config_no}].Delay": video_day_night.delay_seconds,  # noqa: E501
             },
         )
+
+    @property
+    async def async_privacy_mode_available(self) -> bool:
+        """Get privacy mode capability."""
+        try:
+            await self.async_get_privacy_mode_on()
+            return True
+        except HTTPStatusError:
+            return False
 
     async def async_set_privacy_mode_on(self, on: bool, channel: int = 1) -> None:
         """Set privacy mode on or off."""
