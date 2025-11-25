@@ -24,3 +24,4 @@ class Config:
     supported_events: list[EventMessageType]
     supported_streams: dict[StreamType, StreamTypeName]
     software_version: str
+    privacy_mode_available: bool

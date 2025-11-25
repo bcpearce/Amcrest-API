@@ -114,6 +114,25 @@ def mock_camera_server_no_ptz_caps_fixture(httpserver: HTTPServer) -> HTTPServer
     return httpserver
 
 
+@pytest.fixture(name="mock_camera_server_no_privacy_mode")
+def mock_camera_server_no_privacy_mode(httpserver: HTTPServer) -> HTTPServer:
+    """Mock camera server with no PTZ caps."""
+
+    url = yarl.URL("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask")
+    httpserver.expect_request(
+        url.path, query_string=url.query_string
+    ).respond_with_data(
+        "Error\nBad Request!\n",
+        status=400,
+    )
+
+    fixture_path = Path("tests/fixtures/mock_responses")
+    for path in fixture_path.iterdir():
+        _load_fixture(path, httpserver)
+
+    return httpserver
+
+
 @pytest.fixture
 async def camera(mock_camera_server: HTTPServer) -> AsyncGenerator[Camera]:
     """Fixture which communicates with mock camera server."""
@@ -167,6 +186,21 @@ async def camera_no_ptz_caps(
         "testuser",
         "testpassword",
         port=mock_camera_server_no_ptz_caps.port,
+        verify=False,
+    ) as cam:
+        yield cam
+
+
+@pytest.fixture
+async def camera_no_privacy_mode(
+    mock_camera_server_no_privacy_mode: HTTPServer,
+) -> AsyncGenerator[Camera]:
+    """Fixture which communicates with mock camera server and has no PTZ presets."""
+    async with Camera(
+        mock_camera_server_no_privacy_mode.host,
+        "testuser",
+        "testpassword",
+        port=mock_camera_server_no_privacy_mode.port,
         verify=False,
     ) as cam:
         yield cam
