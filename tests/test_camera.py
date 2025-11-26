@@ -159,3 +159,9 @@ async def test_camera_without_privacy_mode(camera_no_privacy_mode: Camera) -> No
     """Test camera without privacy mode."""
     config = await camera_no_privacy_mode.async_get_fixed_config()
     assert config.privacy_mode_available is False
+
+
+async def test_camera_without_smart_track(camera_no_smart_track: Camera) -> None:
+    """Test camera without smart tracking."""
+    config = await camera_no_smart_track.async_get_fixed_config()
+    assert config.smart_track_available is False

@@ -115,10 +115,29 @@ def mock_camera_server_no_ptz_caps_fixture(httpserver: HTTPServer) -> HTTPServer
 
 
 @pytest.fixture(name="mock_camera_server_no_privacy_mode")
-def mock_camera_server_no_privacy_mode(httpserver: HTTPServer) -> HTTPServer:
-    """Mock camera server with no PTZ caps."""
+def mock_camera_server_no_privacy_mode_fixture(httpserver: HTTPServer) -> HTTPServer:
+    """Mock camera server with no Privacy Mode caps."""
 
     url = yarl.URL("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask")
+    httpserver.expect_request(
+        url.path, query_string=url.query_string
+    ).respond_with_data(
+        "Error\nBad Request!\n",
+        status=400,
+    )
+
+    fixture_path = Path("tests/fixtures/mock_responses")
+    for path in fixture_path.iterdir():
+        _load_fixture(path, httpserver)
+
+    return httpserver
+
+
+@pytest.fixture(name="mock_camera_server_no_smart_track")
+def mock_camera_server_no_smart_track_fixture(httpserver: HTTPServer) -> HTTPServer:
+    """Mock camera server with no Smart Track caps."""
+
+    url = yarl.URL("/cgi-bin/configManager.cgi?action=getConfig&name=LeSmartTrack")
     httpserver.expect_request(
         url.path, query_string=url.query_string
     ).respond_with_data(
@@ -201,6 +220,21 @@ async def camera_no_privacy_mode(
         "testuser",
         "testpassword",
         port=mock_camera_server_no_privacy_mode.port,
+        verify=False,
+    ) as cam:
+        yield cam
+
+
+@pytest.fixture
+async def camera_no_smart_track(
+    mock_camera_server_no_smart_track: HTTPServer,
+) -> AsyncGenerator[Camera]:
+    """Fixture which communicates with mock camera server and has no PTZ presets."""
+    async with Camera(
+        mock_camera_server_no_smart_track.host,
+        "testuser",
+        "testpassword",
+        port=mock_camera_server_no_smart_track.port,
         verify=False,
     ) as cam:
         yield cam

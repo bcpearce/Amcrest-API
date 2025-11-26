@@ -25,3 +25,4 @@ class Config:
     supported_streams: dict[StreamType, StreamTypeName]
     software_version: str
     privacy_mode_available: bool
+    smart_track_available: bool
