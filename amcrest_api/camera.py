@@ -73,6 +73,7 @@ class Camera:
                 if k <= config["max_extra_stream"]
             }
             config["privacy_mode_available"] = await self.async_privacy_mode_available
+            config["smart_track_available"] = await self.async_smart_track_available
 
             for _, value in config["network"].items():
                 if isinstance(value, dict) and value.get("IPAddress") == self._host:
@@ -501,8 +502,10 @@ class Camera:
         try:
             await self.async_get_privacy_mode_on()
             return True
-        except HTTPStatusError:
-            return False
+        except HTTPStatusError as e:
+            if e.response.status_code == 400:
+                return False
+            raise
 
     async def async_set_privacy_mode_on(self, on: bool, channel: int = 1) -> None:
         """Set privacy mode on or off."""
@@ -523,6 +526,17 @@ class Camera:
         ]:
             return enabled == "true"
         raise ValueError("Unexpected response reading privacy mode status")
+
+    @property
+    async def async_smart_track_available(self) -> bool:
+        """Get smart track capability."""
+        try:
+            await self.async_get_smart_track_on()
+            return True
+        except HTTPStatusError as e:
+            if e.response.status_code == 400:
+                return False
+            raise
 
     async def async_set_smart_track_on(self, on: bool) -> None:
         """Set smart tracking mode on or off."""
