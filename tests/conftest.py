@@ -141,6 +141,23 @@ async def camera_no_ptz_caps(
 
 
 @pytest.fixture
+async def camera_ip4m_1051_ptz_caps(
+    httpserver: HTTPServer,
+) -> AsyncGenerator[Camera]:
+    """Fixture mocking the response from an Amcrest IP4M-1051"""
+
+    def wrapper(httpserver):
+        ip4m_1051_caps_path = Path(
+            "tests/fixtures/mock_responses_alt/ptz_capabilities_ip4m_1051.json"
+        )
+        _load_fixture(ip4m_1051_caps_path, httpserver)
+        return httpserver
+
+    async for cam in _camera_factory(httpserver, wrapper):
+        yield cam
+
+
+@pytest.fixture
 async def camera_no_privacy_mode(
     httpserver: HTTPServer,
 ) -> AsyncGenerator[Camera]:

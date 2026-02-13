@@ -94,8 +94,9 @@ class PtzCapabilityData:
             if ret.tilt_min > ret.tilt_max:
                 ret.tilt_min, ret.tilt_max = ret.tilt_max, ret.tilt_min
         if ret.zoom:
-            ret.zoom_min = float(caps["ZoomMin"])
-            ret.zoom_max = float(caps["ZoomMax"])
+            # Normalized to 0.0 to 1.0 if not present
+            ret.zoom_min = float(caps.get("ZoomMin", 0.0))
+            ret.zoom_max = float(caps.get("ZoomMax", 1.0))
         if ret.preset:
             ret.preset_min = int(caps["PresetMin"])
             ret.preset_max = int(caps["PresetMax"])

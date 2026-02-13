@@ -61,14 +61,23 @@ async def test_read_ptz_config_no_caps(camera_no_ptz_caps: Camera) -> None:
     assert not caps.tour
 
 
+async def test_read_ptz_config_ip4m_1051(camera_ip4m_1051_ptz_caps: Camera) -> None:
+    """Test get PTZ config based on IP4M-1051 model"""
+    caps = await camera_ip4m_1051_ptz_caps.async_ptz_capabilities
+    assert caps.zoom
+    assert not caps.zoom_min
+
+
 async def test_get_rtsp_url(camera: Camera) -> None:
     """Terst getting the RTSP URL"""
-    url = yarl.URL(await camera.async_get_rtsp_url())
+    url = await camera.async_get_rtsp_url()
+    assert isinstance(url, yarl.URL)
     assert str(url.host) == "localhost"
     assert str(url.scheme) == "rtsp"
     assert url.user
     assert url.password
-    url = yarl.URL(await camera.async_get_rtsp_url(subtype=StreamType.SUBSTREAM1))
+    url = await camera.async_get_rtsp_url(subtype=StreamType.SUBSTREAM1)
+    assert isinstance(url, yarl.URL)
     assert str(url.host) == "localhost"
     assert str(url.scheme) == "rtsp"
     assert url.user
