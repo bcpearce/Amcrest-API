@@ -1,7 +1,6 @@
 """Main"""
 
 import asyncio
-from enum import Enum
 from functools import cached_property
 from pprint import pprint
 
@@ -13,16 +12,6 @@ from . import version
 from .camera import Camera
 from .imaging import ConfigNo, Rotate90Flag, VideoMode
 from .ptz import PtzPresetData, PtzRelativeMove
-
-
-class Color(str, Enum):
-    white = "white"
-    red = "red"
-    cyan = "cyan"
-    magenta = "magenta"
-    yellow = "yellow"
-    green = "green"
-
 
 app = typer.Typer(
     name="amcrest-api",
