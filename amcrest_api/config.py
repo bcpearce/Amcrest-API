@@ -26,3 +26,4 @@ class Config:
     software_version: str
     privacy_mode_available: bool
     smart_track_available: bool
+    audio_detect_available: bool

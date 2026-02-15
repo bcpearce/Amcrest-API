@@ -1,9 +1,11 @@
 """Configuration for Tests."""
 
 import json
-from collections.abc import AsyncGenerator  # pylint: disable=no-name-in-module
+from collections.abc import (
+    AsyncGenerator,  # pylint: disable=no-name-in-module
+    Callable,
+)
 from pathlib import Path
-from typing import Callable
 
 import httpx
 import pytest
