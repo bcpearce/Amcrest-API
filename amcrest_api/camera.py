@@ -17,7 +17,7 @@ from amcrest_api.error import UnsupportedStreamSubtype
 from . import utils
 from .config import Config
 from .const import STREAM_TYPE_DICT, ApiEndpoints, StreamType
-from .event import EventBase, EventMessageData, parse_event_message
+from .event import EventBase, EventMessageData, EventMessageType, parse_event_message
 from .imaging import ConfigNo, Lighting, VideoDayNight, VideoImageControl
 from .ptz import (
     PtzAccuratePosition,
@@ -74,6 +74,7 @@ class Camera:
             }
             config["privacy_mode_available"] = await self.async_privacy_mode_available
             config["smart_track_available"] = await self.async_smart_track_available
+            config["audio_detect_available"] = await self.async_audio_detect_available
 
             for _, value in config["network"].items():
                 if isinstance(value, dict) and value.get("IPAddress") == self._host:
@@ -123,7 +124,7 @@ class Camera:
         self,
         *,
         heartbeat_seconds: int = 10,
-        filter_events: list[str] | None = None,
+        filter_events: list[str] | list[EventMessageType] | None = None,
     ) -> AsyncGenerator[EventBase | None]:
         """
         Asynchronously listen to events.
@@ -135,7 +136,7 @@ class Camera:
                 a list of events to listen to, or None for all capabilities
         """
         filter_events = filter_events or await self.async_supported_events
-        filter_events_param = f"[{','.join(filter_events)}]"  # type: ignore[arg-type]
+        filter_events_param = f"[{','.join(filter_events)}]"
 
         async with (
             self._create_async_client(timeout=heartbeat_seconds * 2) as client,
@@ -557,6 +558,41 @@ class Camera:
         ]:
             return enabled == "true"
         raise ValueError("Unexpected response reading smart track status")
+
+    @property
+    async def async_audio_detect_available(self) -> bool:
+        """Get audio detect capability"""
+        try:
+            await self.async_get_audio_detect_on()
+            return True
+        except HTTPStatusError as e:
+            if e.response.status_code == 400:
+                return False
+            raise
+
+    async def async_set_audio_detect_on(self, on: bool) -> None:
+        """Set smart tracking mode on or off."""
+        await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={
+                "action": "setConfig",
+                "AudioDetect[0].Enable": on,
+                "AudioDetect[0].MutationDetect": on,
+            },
+        )
+
+    async def async_get_audio_detect_on(self) -> bool:
+        """Get audio detect state."""
+        response = await self._async_api_request(
+            ApiEndpoints.CONFIG_MANAGER,
+            params={"action": "getConfig", "name": "AudioDetect"},
+        )
+        if (enabled := response["AudioDetect"][0]["Enable"].lower()) in [
+            "true",
+            "false",
+        ]:
+            return enabled == "true"
+        raise ValueError("Unexpected response reading audio detection")
 
     async def async_snapshot(self, channel: int = 1, subtype: int = 0) -> bytes:
         """Get a still frame from the camera."""

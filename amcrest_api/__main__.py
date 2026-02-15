@@ -34,7 +34,7 @@ console = Console()
 POSSIBLE_ACTIONS = [
     attr
     for attr, value in vars(Camera).items()
-    if isinstance(value, (cached_property, property))
+    if isinstance(value, cached_property | property)
 ]
 
 
@@ -165,7 +165,7 @@ def main(
 
             if key in SET_PRESET_MAP:
                 preset = PtzPresetData(
-                    SET_PRESET_MAP[key], f"MyCustomPreset{SET_PRESET_MAP[key]}"
+                    int(SET_PRESET_MAP[key]), f"MyCustomPreset{SET_PRESET_MAP[key]}"
                 )
                 await cam.async_set_ptz_preset(preset)
                 print(f"saved prest: {preset}")

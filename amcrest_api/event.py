@@ -3,7 +3,7 @@
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 
 
@@ -93,7 +93,7 @@ class EventBase:
         self.event_type = event_type
         self.action = action
         self.raw_data = raw_data
-        self.received_at = datetime.now(timezone.utc)
+        self.received_at = datetime.now(UTC)
 
     def __repr__(self):
         return f"{self.event_type} {self.action} received at {self.received_at}"
@@ -103,9 +103,7 @@ class HeartbeatEvent(EventBase):
     """Heartbeat event."""
 
     def __init__(self):
-        super().__init__(
-            event_type=EventMessageType.Heartbeat, action=EventAction.Pulse
-        )
+        super().__init__(EventMessageType.Heartbeat, EventAction.Pulse)
 
 
 class VideoMotionEvent(EventBase):
@@ -119,6 +117,17 @@ class VideoMotionEvent(EventBase):
         data = json.loads(raw_data)
         self.id = data.get("Id", [])
         self.region_name = data.get("RegionName", [])
+
+
+class AudioMutationEvent(EventBase):
+    """Audio mutation event."""
+
+    index: int
+
+    def __init__(self, action: EventAction, raw_data: str):
+        super().__init__(EventMessageType.AudioAnomaly, action, raw_data)
+        data = json.loads(raw_data)
+        self.index = data.get("index", -1)
 
 
 def parse_event_message(content: str) -> EventBase:
@@ -140,5 +149,7 @@ def parse_event_message(content: str) -> EventBase:
 
     if event_type == EventMessageType.VideoMotion:
         return VideoMotionEvent(EventAction(action), raw_data)
+    elif event_type == EventMessageType.AudioMutation:
+        return AudioMutationEvent(EventAction(action), raw_data)
 
     return EventBase(EventMessageType(event_type), EventAction(action), raw_data)
