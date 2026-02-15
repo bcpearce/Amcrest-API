@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from amcrest_api.event import (
+    AudioMutationEvent,
     EventAction,
     HeartbeatEvent,
     VideoMotionEvent,
@@ -19,6 +20,15 @@ def test_parse_video_motion_event():
 
     event = parse_event_message(motion_event_content)
     assert isinstance(event, VideoMotionEvent)
+    assert event.action == EventAction.Stop
+
+
+def test_parse_audio_anomaly_event():
+    """Test parsing audio anomaly event."""
+    with open(FIXTURE_RESOURCE_PATH / "audio_mutation_stop.txt", "rb") as f:
+        audio_event_content = f.read().decode(encoding="utf-8")
+    event = parse_event_message(audio_event_content)
+    assert isinstance(event, AudioMutationEvent)
     assert event.action == EventAction.Stop
 
 

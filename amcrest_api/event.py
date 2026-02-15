@@ -114,9 +114,9 @@ class VideoMotionEvent(EventBase):
 
     def __init__(self, action: EventAction, raw_data: str):
         super().__init__(EventMessageType.VideoMotion, action, raw_data)
-        data = json.loads(raw_data)
-        self.id = data.get("Id", [])
-        self.region_name = data.get("RegionName", [])
+        if (data := json.loads(raw_data) if raw_data else None) is not None:
+            self.id = data.get("Id", [])
+            self.region_name = data.get("RegionName", [])
 
 
 class AudioMutationEvent(EventBase):
@@ -126,8 +126,6 @@ class AudioMutationEvent(EventBase):
 
     def __init__(self, action: EventAction, raw_data: str):
         super().__init__(EventMessageType.AudioAnomaly, action, raw_data)
-        data = json.loads(raw_data)
-        self.index = data.get("index", -1)
 
 
 def parse_event_message(content: str) -> EventBase:
